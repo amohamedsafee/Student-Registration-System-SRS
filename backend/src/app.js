@@ -83,13 +83,16 @@ app.get('/api/health', (req, res) => {
 const authRoutes = require('./modules/auth/auth.routes');
 const courseRoutes = require('./modules/courses/course.routes');
 const batchRoutes = require('./modules/batches/batch.routes');
+const registrationRoutes = require('./modules/registrations/registration.routes');
+const studentRoutes = require('./modules/students/student.routes');
+const adminRoutes = require('./modules/admin/admin.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/batches', batchRoutes);
-// app.use('/api/registrations', registrationRoutes);
-// app.use('/api/students', studentRoutes);
-// app.use('/api/admin', adminRoutes);
+app.use('/api/registrations', registrationRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 8. 404 Handler for undefined routes
 app.use((req, res, next) => {

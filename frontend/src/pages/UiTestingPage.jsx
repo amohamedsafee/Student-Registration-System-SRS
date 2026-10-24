@@ -571,6 +571,56 @@ export default function UiTestingPage() {
             </div>
           </div>
         </section>
+
+        {/* Section 7: Complete Application Pages Directory (Days 11 - 22) */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-3 pb-3 border-b-2 border-[#182B5E]">
+            <span className="font-mono text-xs font-black bg-[#182B5E] text-white px-2 py-0.5">
+              07
+            </span>
+            <h2 className="text-xl font-black uppercase tracking-tight text-[#182B5E]">
+              System Views & Portals Directory (Days 11 – 22)
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Student Registration */}
+            <div className="bg-white border-[3px] border-[#182B5E] shadow-[6px_6px_0px_0px_#182B5E] p-6 space-y-3">
+              <span className="eyebrow">Days 11 - 13</span>
+              <h3 className="text-lg font-black text-[#182B5E]">Direct Intake Registration</h3>
+              <p className="text-xs font-semibold text-[#5A6B8C]">
+                Single atomic transaction form: account credentials, student dossier, course selection, and receipt.
+              </p>
+              <a href="/register" className="btn-sm-solid inline-flex items-center gap-2 mt-2">
+                Open Registration Form <ArrowRight size={14} />
+              </a>
+            </div>
+
+            {/* Student Dashboard */}
+            <div className="bg-white border-[3px] border-[#182B5E] shadow-[6px_6px_0px_0px_#182B5E] p-6 space-y-3">
+              <span className="eyebrow">Days 14 - 15</span>
+              <h3 className="text-lg font-black text-[#182B5E]">Student Dashboard</h3>
+              <p className="text-xs font-semibold text-[#5A6B8C]">
+                Personal dossier, own course registrations, status timeline tracking, cancellation, and extra enrollments.
+              </p>
+              <a href="/dashboard" className="btn-sm-solid inline-flex items-center gap-2 mt-2">
+                Open Student Dashboard <ArrowRight size={14} />
+              </a>
+            </div>
+
+            {/* Admin Overview */}
+            <div className="bg-white border-[3px] border-[#182B5E] shadow-[6px_6px_0px_0px_#182B5E] p-6 space-y-3">
+              <span className="eyebrow">Days 16 - 21</span>
+              <h3 className="text-lg font-black text-[#182B5E]">Admin Executive Console</h3>
+              <p className="text-xs font-semibold text-[#5A6B8C]">
+                Intake metrics, course & batch controllers, registration review dossier, status modification, and safe CSV export.
+              </p>
+              <a href="/admin" className="btn-sm-solid inline-flex items-center gap-2 mt-2">
+                Open Admin Portal <ArrowRight size={14} />
+              </a>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Modal Dialog Instance */}

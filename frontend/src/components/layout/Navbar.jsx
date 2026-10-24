@@ -233,6 +233,22 @@ export default function Navbar() {
             >
               Apply Online
             </Link>
+            {isAuthenticated && !isAdmin && (
+              <Link
+                to="/dashboard"
+                className={`llc-nav-link ${isActive('/dashboard') ? 'is-active' : ''}`}
+              >
+                My Dashboard
+              </Link>
+            )}
+            {isAuthenticated && isAdmin && (
+              <Link
+                to="/admin"
+                className={`llc-nav-link ${isActive('/admin') ? 'is-active' : ''}`}
+              >
+                Admin Console
+              </Link>
+            )}
             <Link
               to="/test-ui"
               className={`llc-nav-link ${isActive('/test-ui') ? 'is-active' : ''}`}

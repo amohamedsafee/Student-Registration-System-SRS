@@ -1,15 +1,33 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './features/auth/context/AuthContext'
-import Home from './pages/Home'
-import Courses from './pages/Courses'
-import CourseDetails from './pages/CourseDetails'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import VerifyEmail from './pages/VerifyEmail'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import UiTestingPage from './pages/UiTestingPage'
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './features/auth/context/AuthContext';
+import ProtectedRoute from './core/routes/ProtectedRoute';
+import AdminRoute from './core/routes/AdminRoute';
+
+// Public Catalog & Intake Pages
+import Home from './pages/Home';
+import Courses from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
+import Register from './pages/Register';
+
+// Auth Pages
+import Login from './pages/Login';
+import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
+// Student Portal Pages
+import StudentDashboard from './pages/StudentDashboard';
+
+// Admin Portal Pages
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminRegistrations from './pages/admin/AdminRegistrations';
+import AdminCourses from './pages/admin/AdminCourses';
+import AdminBatches from './pages/admin/AdminBatches';
+
+// Testing Lab
+import UiTestingPage from './pages/UiTestingPage';
 
 export default function App() {
   return (
@@ -20,22 +38,47 @@ export default function App() {
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
 
-        {/* Registration */}
+        {/* Public Direct Intake Registration */}
         <Route path="/register" element={<Register />} />
 
-        {/* Authentication & Account Recovery Routes */}
+        {/* Authentication & Account Recovery */}
         <Route path="/login" element={<Login />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Student Protected Portal */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Protected Console */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="registrations" element={<AdminRegistrations />} />
+          <Route path="courses" element={<AdminCourses />} />
+          <Route path="batches" element={<AdminBatches />} />
+        </Route>
 
         {/* UI System Testing Lab */}
         <Route path="/test-ui" element={<UiTestingPage />} />
         <Route path="/components-showcase" element={<UiTestingPage />} />
 
         {/* Fallback */}
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
-  )
+  );
 }

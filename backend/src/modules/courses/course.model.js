@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const database = require('../../config/database');
 
 class CourseModel {
@@ -26,6 +27,30 @@ class CourseModel {
   }
 
   /**
+   * Find all courses for admin (including inactive)
+   */
+  async findAll(connection = null) {
+    const sql = `
+      SELECT 
+        c.id,
+        c.name,
+        c.description,
+        c.duration,
+        c.is_active,
+        c.created_at,
+        c.updated_at,
+        COUNT(DISTINCT b.id) AS total_batches,
+        COUNT(DISTINCT r.id) AS total_registrations
+      FROM courses c
+      LEFT JOIN batches b ON b.course_id = c.id
+      LEFT JOIN registrations r ON r.batch_id = b.id
+      GROUP BY c.id
+      ORDER BY c.created_at DESC
+    `;
+    return database.query(sql, [], connection);
+  }
+
+  /**
    * Find course by ID
    * @param {string} id 
    */
@@ -47,6 +72,52 @@ class CourseModel {
     const sql = 'SELECT id, name, is_active FROM courses WHERE name = ?';
     const rows = await database.query(sql, [name], connection);
     return rows[0] || null;
+  }
+
+  /**
+   * Create course
+   */
+  async create({ name, description, duration, is_active = true }, connection = null) {
+    const id = crypto.randomUUID();
+    const sql = `
+      INSERT INTO courses (id, name, description, duration, is_active)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    await database.query(sql, [id, name, description || null, duration || null, is_active], connection);
+    return this.findById(id, connection);
+  }
+
+  /**
+   * Update course
+   */
+  async update(id, { name, description, duration, is_active }, connection = null) {
+    const sql = `
+      UPDATE courses
+      SET 
+        name = COALESCE(?, name),
+        description = COALESCE(?, description),
+        duration = COALESCE(?, duration),
+        is_active = COALESCE(?, is_active),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+    await database.query(sql, [
+      name || null,
+      description !== undefined ? description : null,
+      duration || null,
+      is_active !== undefined ? is_active : null,
+      id,
+    ], connection);
+    return this.findById(id, connection);
+  }
+
+  /**
+   * Toggle active status
+   */
+  async setActive(id, isActive, connection = null) {
+    const sql = 'UPDATE courses SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+    await database.query(sql, [isActive, id], connection);
+    return this.findById(id, connection);
   }
 }
 

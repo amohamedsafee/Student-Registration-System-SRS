@@ -4,7 +4,22 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { Button, Input, Select, StatusBadge, Spinner } from '../components/ui';
 import courseApi from '../features/courses/api/courseApi';
-import { User, Mail, Lock, Phone, MapPin, Send, CheckCircle, ArrowRight } from 'lucide-react';
+import registrationApi from '../features/registration/api/registrationApi';
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle,
+  ArrowRight,
+  Copy,
+  Check,
+  AlertTriangle,
+  Printer,
+  Calendar,
+} from 'lucide-react';
 
 export default function Register() {
   const [searchParams] = useSearchParams();
@@ -22,12 +37,18 @@ export default function Register() {
     phone: '',
     whatsapp: '',
     address: '',
+    dob: '',
+    gender: 'male',
     courseId: initialCourse,
     batchId: initialBatch,
   });
 
+  const [clientErrors, setClientErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [assignedNumber, setAssignedNumber] = useState('LLC-2026-000001');
+  const [assignedNumber, setAssignedNumber] = useState('');
+  const [copied, setCopied] = useState(false);
 
   // Load active courses from backend
   useEffect(() => {
@@ -74,12 +95,79 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const validateClientForm = () => {
+    const errors = {};
+    if (!formData.fullName.trim() || formData.fullName.trim().length < 3) {
+      errors.fullName = 'Full name must be at least 3 characters.';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email.trim())) {
+      errors.email = 'Valid email address is required.';
+    }
+
+    if (!formData.password || formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long.';
+    }
+
+    const phoneRegex = /^(?:(?:\+|00)94|0)?7[0-9]{8}$/;
+    if (!formData.phone.trim() || !phoneRegex.test(formData.phone.replace(/[\s-]/g, ''))) {
+      errors.phone = 'Valid Sri Lankan mobile number required (e.g. 0771234567).';
+    }
+
+    if (!formData.batchId) {
+      errors.batchId = 'Please select an open batch.';
+    }
+
+    setClientErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate generation for Day 5/6 UI (Engine transaction will be fully wired in Phase 4)
-    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    setAssignedNumber(`LLC-2026-${randomSuffix}`);
-    setSubmitted(true);
+    setServerError('');
+
+    if (!validateClientForm()) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const payload = {
+        full_name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone_number: formData.phone.trim(),
+        whatsapp_number: formData.whatsapp.trim() || null,
+        home_address: formData.address.trim() || null,
+        date_of_birth: formData.dob || null,
+        gender: formData.gender || null,
+        batch_id: formData.batchId,
+      };
+
+      const response = await registrationApi.apply(payload);
+      setAssignedNumber(response.registration_number);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Registration failed:', err);
+      setServerError(
+        err.message || 'Registration failed. Please check your inputs and try again.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCopy = () => {
+    if (assignedNumber) {
+      navigator.clipboard.writeText(assignedNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   const selectedCourseObj = courses.find((c) => c.id === formData.courseId);
@@ -90,7 +178,7 @@ export default function Register() {
       <Navbar />
 
       <main className="llc-container py-12">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
           <div className="eyebrow">
             Direct Student Intake · 2026
           </div>
@@ -103,55 +191,120 @@ export default function Register() {
         </div>
 
         {submitted ? (
-          <div className="max-w-xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 sm:p-10 text-center space-y-6">
-            <div className="w-16 h-16 border-2 border-[#182B5E] bg-[#116530] text-white flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#182B5E]">
-              <CheckCircle size={32} />
-            </div>
+          /* Day 13 Confirmation Receipt */
+          <div className="max-w-2xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 sm:p-12 space-y-8">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 border-[3px] border-[#182B5E] bg-[#116530] text-white flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#182B5E]">
+                <CheckCircle size={36} />
+              </div>
 
-            <div>
-              <span className="text-xs font-black uppercase tracking-widest text-[#5A6B8C]">
-                Official Admission Submission
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#182B5E] mt-1">
-                Registration Received
-              </h2>
-            </div>
-
-            <div className="border-2 border-[#182B5E] bg-[#F7F9FC] p-5 text-left space-y-3">
-              <div className="flex justify-between items-center pb-2 border-b-2 border-[#182B5E]">
-                <span className="text-xs font-black uppercase text-[#5A6B8C]">Registration Number</span>
-                <span className="font-mono text-xl font-black text-[#182B5E]">{assignedNumber}</span>
-              </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-[#5A6B8C]">Application Status:</span>
-                <StatusBadge status="PENDING" size="sm" />
-              </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-[#5A6B8C]">Program:</span>
-                <span className="font-black text-[#182B5E]">{selectedCourseObj?.name || 'Language Program'}</span>
-              </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-[#5A6B8C]">Batch:</span>
-                <span className="font-black text-[#182B5E]">{selectedBatchObj?.batch_name || 'Upcoming Batch'}</span>
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-[#116530] bg-[#DCFCE7] px-3 py-1 border border-[#116530]">
+                  Application Confirmed
+                </span>
+                <h2 className="text-3xl font-black text-[#182B5E] mt-3">
+                  Registration Successfully Submitted
+                </h2>
+                <p className="text-sm font-semibold text-[#5A6B8C] mt-1">
+                  Keep your registration number safe. You will need it for admission inquiries and payments.
+                </p>
               </div>
             </div>
 
+            {/* Registration Number Display Box */}
+            <div className="border-[3px] border-[#182B5E] bg-[#F7F9FC] p-6 shadow-[4px_4px_0px_0px_#182B5E] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b-2 border-[#182B5E]">
+                <div>
+                  <span className="text-xs font-black uppercase tracking-wider text-[#5A6B8C]">
+                    Registration Reference Number
+                  </span>
+                  <div className="font-mono text-3xl font-black text-[#182B5E] tracking-tight">
+                    {assignedNumber}
+                  </div>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCopy}
+                  iconLeading={copied ? <Check size={16} /> : <Copy size={16} />}
+                >
+                  {copied ? 'Copied!' : 'Copy Number'}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Student Name:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{formData.fullName}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Registered Email:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{formData.email}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Selected Course:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{selectedCourseObj?.name || 'Selected Course'}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Batch & Schedule:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{selectedBatchObj?.batch_name || 'Assigned Batch'}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Initial Status:</span>
+                  <StatusBadge status="PENDING" size="sm" />
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase">Intake Year:</span>
+                  <span className="font-black text-[#182B5E] text-sm">2026 Academic Cycle</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Next Steps Guidance */}
+            <div className="border-l-4 border-[#182B5E] bg-[#EEF2F6] p-4 text-xs font-semibold text-[#182B5E] space-y-1">
+              <p className="font-black uppercase tracking-wider">Next Step: Verification & Portal Access</p>
+              <p className="text-[#5A6B8C]">
+                A verification link has been sent to <strong>{formData.email}</strong>. Once verified, log in to your Student Dashboard to track your admission review and download payment instructions.
+              </p>
+            </div>
+
+            {/* Actions */}
             <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
-              <Button variant="secondary" size="sm" onClick={() => setSubmitted(false)}>
-                Submit Another Application
+              <Button
+                variant="outline"
+                size="md"
+                onClick={handlePrint}
+                iconLeading={<Printer size={16} />}
+              >
+                Print Receipt
               </Button>
-              <Link to="/courses">
-                <Button variant="primary" size="sm" iconTrailing={<ArrowRight size={14} />}>
-                  Explore More Courses
+              <Link to="/login">
+                <Button
+                  variant="primary"
+                  size="md"
+                  iconTrailing={<ArrowRight size={16} />}
+                >
+                  Log In to Student Portal
                 </Button>
               </Link>
             </div>
           </div>
         ) : (
+          /* Day 12 Registration Form */
           <form
             onSubmit={handleSubmit}
             className="max-w-3xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-6 sm:p-10 space-y-8"
           >
+            {serverError && (
+              <div className="border-[3px] border-[#D9381E] bg-[#FEE2E2] p-4 shadow-[4px_4px_0px_0px_#D9381E] flex items-start gap-3">
+                <AlertTriangle size={20} className="text-[#D9381E] flex-shrink-0 mt-0.5" />
+                <div className="text-xs">
+                  <p className="font-black uppercase tracking-wider text-[#D9381E]">Application Submission Notice</p>
+                  <p className="font-bold text-[#182B5E] mt-0.5">{serverError}</p>
+                </div>
+              </div>
+            )}
+
             {/* Step 1: Course & Batch Selection */}
             <div className="space-y-4">
               <div className="pb-2 border-b-2 border-[#182B5E] flex items-center justify-between">
@@ -183,7 +336,11 @@ export default function Register() {
                     label="Open Batch Schedule"
                     required
                     value={formData.batchId}
-                    onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, batchId: e.target.value });
+                      if (clientErrors.batchId) setClientErrors({ ...clientErrors, batchId: null });
+                    }}
+                    error={clientErrors.batchId}
                     options={
                       batches.length > 0
                         ? batches.map((b) => ({
@@ -212,7 +369,11 @@ export default function Register() {
                   required
                   placeholder="e.g. A. Mohamed Safee"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  error={clientErrors.fullName}
+                  onChange={(e) => {
+                    setFormData({ ...formData, fullName: e.target.value });
+                    if (clientErrors.fullName) setClientErrors({ ...clientErrors, fullName: null });
+                  }}
                   iconLeading={<User size={16} />}
                 />
                 <Input
@@ -227,7 +388,11 @@ export default function Register() {
                   required
                   placeholder="0771234567"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  error={clientErrors.phone}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                    if (clientErrors.phone) setClientErrors({ ...clientErrors, phone: null });
+                  }}
                   iconLeading={<Phone size={16} />}
                 />
                 <Input
@@ -237,6 +402,23 @@ export default function Register() {
                   onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                   iconLeading={<Phone size={16} />}
                 />
+                <Input
+                  type="date"
+                  label="Date of Birth (Optional)"
+                  value={formData.dob}
+                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                  iconLeading={<Calendar size={16} />}
+                />
+                <Select
+                  label="Gender"
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                  options={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' },
+                    { value: 'other', label: 'Other' },
+                  ]}
+                />
               </div>
             </div>
 
@@ -244,9 +426,9 @@ export default function Register() {
             <div className="space-y-4">
               <div className="pb-2 border-b-2 border-[#182B5E] flex items-center justify-between">
                 <h2 className="text-sm font-black uppercase tracking-wider text-[#182B5E]">
-                  3. Account Credentials
+                  3. Student Portal Account
                 </h2>
-                <span className="text-xs font-bold text-[#5A6B8C] uppercase">For Status Tracking</span>
+                <span className="text-xs font-bold text-[#5A6B8C] uppercase">For Tracking Status</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
@@ -255,7 +437,11 @@ export default function Register() {
                   required
                   placeholder="student@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  error={clientErrors.email}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (clientErrors.email) setClientErrors({ ...clientErrors, email: null });
+                  }}
                   iconLeading={<Mail size={16} />}
                 />
                 <Input
@@ -264,7 +450,11 @@ export default function Register() {
                   required
                   placeholder="Minimum 8 characters"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  error={clientErrors.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (clientErrors.password) setClientErrors({ ...clientErrors, password: null });
+                  }}
                   iconLeading={<Lock size={16} />}
                 />
               </div>
@@ -273,16 +463,17 @@ export default function Register() {
             {/* Submit Bar */}
             <div className="pt-4 border-t-2 border-[#182B5E] flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs font-bold text-[#5A6B8C]">
-                Submitting creates your profile and reserves your registration spot.
+                Submitting atomically reserves your seat and generates your tracking number.
               </p>
               <Button
                 type="submit"
                 variant="primary"
                 size="md"
-                iconTrailing={<Send size={15} />}
+                disabled={submitting}
+                iconTrailing={submitting ? <Spinner size="sm" variant="white" /> : <Send size={15} />}
                 className="w-full sm:w-auto"
               >
-                Submit Application
+                {submitting ? 'Processing Application...' : 'Submit Application'}
               </Button>
             </div>
           </form>

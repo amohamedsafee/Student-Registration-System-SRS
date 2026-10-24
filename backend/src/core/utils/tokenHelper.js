@@ -18,7 +18,17 @@ function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
+/**
+ * Calculate expiry date from hours
+ * @param {number} hours 
+ */
+function getTokenExpiryDate(hours = 24) {
+  return new Date(Date.now() + hours * 60 * 60 * 1000);
+}
+
 module.exports = {
   generateRandomToken,
+  generateSecureToken: generateRandomToken,
   hashToken,
+  getTokenExpiryDate,
 };
