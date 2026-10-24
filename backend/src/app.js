@@ -79,11 +79,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 7. Route place-holders for modules (to be expanded in subsequent days)
-// Feature module routers will be mounted here:
-// app.use('/api/auth', authRoutes);
-// app.use('/api/courses', courseRoutes);
-// app.use('/api/batches', batchRoutes);
+// 7. Route mounts for feature modules
+const authRoutes = require('./modules/auth/auth.routes');
+const courseRoutes = require('./modules/courses/course.routes');
+const batchRoutes = require('./modules/batches/batch.routes');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/batches', batchRoutes);
 // app.use('/api/registrations', registrationRoutes);
 // app.use('/api/students', studentRoutes);
 // app.use('/api/admin', adminRoutes);

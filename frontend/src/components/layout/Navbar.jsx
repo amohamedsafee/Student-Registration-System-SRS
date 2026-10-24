@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '../../features/auth/hooks/useAuth';
+import StatusBadge from '../ui/StatusBadge';
 
 export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +31,11 @@ export default function Navbar() {
 
   const closeMobileMenu = () => {
     setIsMobileOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   const isActive = (path) => {
@@ -184,7 +194,7 @@ export default function Navbar() {
           gap: 1rem;
           margin-top: 1.5rem;
         }
-        .llc-mobile-cta a {
+        .llc-mobile-cta a, .llc-mobile-cta button {
           flex: 1;
           padding: 1rem;
           text-align: center;
@@ -232,12 +242,34 @@ export default function Navbar() {
           </nav>
 
           <div className="llc-nav-actions">
-            <Link to="/login" className="btn-ghost">
-              Sign in
-            </Link>
-            <Link to="/register" className="btn-sm-solid">
-              Apply Now
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col text-right">
+                  <span className="text-xs font-black uppercase text-[#182B5E] max-w-[130px] truncate">
+                    {user?.full_name || user?.email}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#D9381E] uppercase">
+                    {user?.role === 'admin' ? 'Administrator' : 'Student'}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="btn-sm-solid"
+                  id="navbar-logout-btn"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="btn-ghost">
+                  Sign in
+                </Link>
+                <Link to="/register" className="btn-sm-solid">
+                  Apply Now
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -267,12 +299,26 @@ export default function Navbar() {
                 UI Showcase
               </Link>
               <div className="llc-mobile-cta">
-                <Link to="/login" className="outline" onClick={closeMobileMenu}>
-                  Sign in
-                </Link>
-                <Link to="/register" className="solid" onClick={closeMobileMenu}>
-                  Apply
-                </Link>
+                {isAuthenticated ? (
+                  <button
+                    className="solid"
+                    onClick={() => {
+                      closeMobileMenu();
+                      handleLogout();
+                    }}
+                  >
+                    Sign Out ({user?.role})
+                  </button>
+                ) : (
+                  <>
+                    <Link to="/login" className="outline" onClick={closeMobileMenu}>
+                      Sign in
+                    </Link>
+                    <Link to="/register" className="solid" onClick={closeMobileMenu}>
+                      Apply
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

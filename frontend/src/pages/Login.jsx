@@ -1,22 +1,40 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { Button, Input } from '../components/ui';
-import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
+import useAuth from '../features/auth/hooks/useAuth';
+import { Mail, Lock, LogIn, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const handleLogin = (e) => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || '/courses';
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage(null);
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const user = await login(email, password);
+      if (user.role === 'admin') {
+        navigate('/test-ui'); // or admin dashboard when ready
+      } else {
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      setErrorMessage(err.message || 'Invalid email or password');
+    } finally {
       setLoading(false);
-      alert('Authentication with JWT cookies will be connected in Phase 3 (Days 7-10).');
-    }, 700);
+    }
   };
 
   return (
@@ -41,12 +59,19 @@ export default function Login() {
             onSubmit={handleLogin}
             className="bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 space-y-5"
           >
+            {errorMessage && (
+              <div className="p-3.5 border-2 border-[#D9381E] bg-[#FFF5F5] flex items-center gap-2 text-xs font-bold text-[#D9381E]">
+                <AlertCircle size={16} className="shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <Input
               id="login-email"
               type="email"
               label="Email Address"
               required
-              placeholder="e.g. student@example.com or admin@llc.edu.lk"
+              placeholder="e.g. admin@llc.edu.lk or student@llc.lk"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               iconLeading={<Mail size={16} />}
@@ -64,17 +89,10 @@ export default function Login() {
             />
 
             <div className="flex items-center justify-between text-xs pt-1 font-bold text-[#5A6B8C]">
-              <label className="flex items-center gap-2 cursor-pointer hover:text-[#182B5E]">
-                <input
-                  type="checkbox"
-                  className="border-2 border-[#182B5E] text-[#182B5E] focus:ring-0"
-                  style={{ borderRadius: 0 }}
-                />
-                <span>Remember me</span>
-              </label>
-              <a href="#" className="text-[#D9381E] hover:underline">
+              <span className="text-[11px] text-[#5A6B8C]">Admin: admin@llc.edu.lk</span>
+              <Link to="/forgot-password" className="text-[#D9381E] hover:underline">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <Button
@@ -91,7 +109,10 @@ export default function Login() {
 
             <div className="pt-4 border-t-2 border-[#182B5E] text-center text-xs font-semibold text-[#5A6B8C]">
               <span>New student applying for 2026? </span>
-              <Link to="/register" className="text-[#D9381E] font-black uppercase tracking-wider hover:underline inline-flex items-center gap-1 ml-1">
+              <Link
+                to="/register"
+                className="text-[#D9381E] font-black uppercase tracking-wider hover:underline inline-flex items-center gap-1 ml-1"
+              >
                 <span>Apply online</span>
                 <ArrowRight size={12} />
               </Link>

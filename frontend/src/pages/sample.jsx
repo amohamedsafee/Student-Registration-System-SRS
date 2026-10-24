@@ -596,15 +596,15 @@ export default function LandingPage() {
           </a>
 
           <nav className="nav-links">
-            <a className="nav-link" href="#courses">Courses</a>
+            <a className="nav-link" href="/courses">Courses</a>
             <a className="nav-link" href="#how-it-works">Process</a>
-            <a className="nav-link" href="#status">Status</a>
+            <a className="nav-link" href="/test-ui">UI System</a>
             <a className="nav-link" href="#faq">FAQ</a>
           </nav>
 
           <div className="nav-actions">
-            <a className="btn-ghost" href="#login">Sign in</a>
-            <a className="btn-sm-solid" href="#register">Apply Now</a>
+            <a className="btn-ghost" href="/login">Sign in</a>
+            <a className="btn-sm-solid" href="/register">Apply Now</a>
           </div>
 
           <button 
@@ -619,13 +619,13 @@ export default function LandingPage() {
         <div className={`mobile-sheet ${isMobileOpen ? 'open' : ''}`}>
           <div>
             <div className="mobile-inner">
-              <a className="mobile-link" href="#courses" onClick={closeMobileMenu}>Courses</a>
+              <a className="mobile-link" href="/courses" onClick={closeMobileMenu}>Courses</a>
               <a className="mobile-link" href="#how-it-works" onClick={closeMobileMenu}>Process</a>
-              <a className="mobile-link" href="#status" onClick={closeMobileMenu}>Status</a>
+              <a className="mobile-link" href="/test-ui" onClick={closeMobileMenu}>UI System</a>
               <a className="mobile-link" href="#faq" onClick={closeMobileMenu}>FAQ</a>
               <div className="mobile-cta">
-                <a className="outline" href="#login" onClick={closeMobileMenu}>Sign in</a>
-                <a className="solid" href="#register" onClick={closeMobileMenu}>Apply</a>
+                <a className="outline" href="/login" onClick={closeMobileMenu}>Sign in</a>
+                <a className="solid" href="/register" onClick={closeMobileMenu}>Apply</a>
               </div>
             </div>
           </div>
@@ -643,8 +643,8 @@ export default function LandingPage() {
                 Browse courses, pick an open batch and register in under two minutes. Your account is created in the same step — then track your application status live.
               </p>
               <div className="hero-actions">
-                <a className="btn-primary" href="#register">Start Registration</a>
-                <a className="btn-secondary" href="#courses">Browse Courses</a>
+                <a className="btn-primary" href="/register">Start Registration</a>
+                <a className="btn-secondary" href="/courses">Browse Courses</a>
               </div>
             </div>
 
