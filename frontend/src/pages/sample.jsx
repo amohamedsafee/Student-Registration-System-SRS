@@ -1,1169 +1,936 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react';
 
-/* ------------------------------------------------------------------ */
-/*  DATA                                                               */
-/* ------------------------------------------------------------------ */
+export default function LandingPage() {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
+  const navRef = useRef(null);
+  const statsRef = useRef(null);
 
-const NAV_LINKS = [
-  { label: 'Courses', to: '/courses' },
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Status', href: '#status' },
-  { label: 'FAQ', href: '#faq' },
-]
-
-const STATS = [
-  { value: 12, suffix: '+', label: 'Courses offered' },
-  { value: 35, suffix: '+', label: 'Active batches' },
-  { value: 2400, suffix: '+', label: 'Students enrolled' },
-  { value: 48, suffix: 'h', label: 'Avg. review time' },
-]
-
-const TICKER = [
-  'Spoken English', 'Arabic', 'Tamil', 'IELTS Prep', 'French',
-  'Quran & Tajweed', 'Hindi', 'Business English', 'Urdu', 'German',
-]
-
-const COURSES = [
-  {
-    icon: '🗣️',
-    name: 'Spoken English',
-    tagline: 'Beginner → Advanced',
-    duration: '3 months',
-    schedule: 'Sat & Sun · 4.00 – 6.00 PM',
-    batches: 3,
-    accent: 'from-indigo-500 to-cyan-400',
-  },
-  {
-    icon: '📖',
-    name: 'Quran & Tajweed',
-    tagline: 'All levels',
-    duration: '6 months',
-    schedule: 'Weekdays · 5.00 – 7.00 PM',
-    batches: 2,
-    accent: 'from-emerald-500 to-teal-400',
-  },
-  {
-    icon: '🎯',
-    name: 'IELTS Preparation',
-    tagline: 'Band 6.5+ track',
-    duration: '10 weeks',
-    schedule: 'Weekends · 9.00 AM – 12.00 PM',
-    batches: 1,
-    accent: 'from-amber-500 to-orange-400',
-  },
-]
-
-const STEPS = [
-  {
-    n: '01',
-    title: 'Pick a course & batch',
-    body: 'Browse only what is actually open. Every batch shows its schedule, start date and live seat availability.',
-  },
-  {
-    n: '02',
-    title: 'Fill one smart form',
-    body: 'Your account is created inside the registration form itself — no separate signup, no back-and-forth.',
-  },
-  {
-    n: '03',
-    title: 'Get your registration number',
-    body: 'Your unique LLC reference is generated the moment your submission commits. Screenshot it, keep it.',
-  },
-  {
-    n: '04',
-    title: 'Track your status',
-    body: 'Sign in any time to watch PENDING → UNDER_REVIEW → CONFIRMED update in your own dashboard.',
-  },
-]
-
-const FEATURES = [
-  {
-    icon: '🛡️',
-    title: 'Atomic registration',
-    body: 'Account, profile and application are written in one MySQL transaction. If anything fails, nothing is half-created.',
-    span: 'md:col-span-2',
-  },
-  {
-    icon: '🔢',
-    title: 'Unguessable-by-design numbering',
-    body: 'Sequential LLC-2026-000001 style references, guarded by a row lock and a unique index.',
-    span: '',
-  },
-  {
-    icon: '🔒',
-    title: 'Bank-grade credentials',
-    body: 'Argon2/bcrypt hashing, HTTP-only Secure cookies, and generic auth errors that never leak who exists.',
-    span: '',
-  },
-  {
-    icon: '📱',
-    title: 'Mobile-first by default',
-    body: 'Designed for a phone in one hand on a slow connection — because that is how most students apply.',
-    span: '',
-  },
-  {
-    icon: '📨',
-    title: 'Verified email, easy recovery',
-    body: 'Single-use verification and reset tokens that expire. Get back in without calling the office.',
-    span: 'md:col-span-2',
-  },
-]
-
-const STATUSES = [
-  { key: 'PENDING', label: 'Pending', body: 'Application received and waiting in the review queue.', tone: 'indigo' },
-  { key: 'UNDER_REVIEW', label: 'Under review', body: 'An administrator is checking your details.', tone: 'cyan' },
-  { key: 'CONFIRMED', label: 'Confirmed', body: 'Your seat is secured. Welcome to LLC.', tone: 'emerald' },
-]
-
-const TESTIMONIALS = [
-  {
-    quote:
-      'I registered from my phone during a bus ride. Got the number instantly and saw my confirmation two days later.',
-    name: 'A. Fathima',
-    meta: 'Spoken English · Weekend batch',
-  },
-  {
-    quote:
-      'No queues at the office, no paper forms. The dashboard told me exactly where my application stood.',
-    name: 'M. Rizwan',
-    meta: 'IELTS Preparation · 2026 intake',
-  },
-  {
-    quote:
-      'As an administrator I can filter by batch, update a status, and export the list in under a minute.',
-    name: 'S. Nithya',
-    meta: 'LLC Administration',
-  },
-]
-
-const FAQS = [
-  {
-    q: 'Do I need an account before I register?',
-    a: 'No. Your account is created as part of the registration form. You choose your email and password while applying, and you sign in afterwards with the same details.',
-  },
-  {
-    q: 'Does submitting the form confirm my admission?',
-    a: 'No. Every new registration starts as PENDING. An administrator reviews it and moves it to UNDER_REVIEW and then CONFIRMED. You can follow the change in your dashboard.',
-  },
-  {
-    q: 'What if the batch I want is closed?',
-    a: 'Closed batches are not shown in the public catalogue and the server re-checks availability at submission time. If a batch closes while you are filling the form, you will get a clear message instead of a silent failure.',
-  },
-  {
-    q: 'Can I register for more than one course?',
-    a: 'Yes. Once you have an account you can add registrations for other courses and batches from your dashboard. Registering twice for the same batch is blocked.',
-  },
-  {
-    q: 'I forgot my password — what now?',
-    a: 'Use the “Forgot password” link on the sign-in page. You will receive a single-use reset link that expires shortly after it is issued.',
-  },
-]
-
-/* ------------------------------------------------------------------ */
-/*  SMALL HOOKS                                                        */
-/* ------------------------------------------------------------------ */
-
-function useCountUp(target, start) {
-  const [val, setVal] = useState(0)
+  // Sticky navbar effect
   useEffect(() => {
-    if (!start) return
-    let raf
-    const duration = 1600
-    const t0 = performance.now()
-    const tick = (t) => {
-      const p = Math.min((t - t0) / duration, 1)
-      const eased = 1 - Math.pow(1 - p, 3)
-      setVal(Math.round(target * eased))
-      if (p < 1) raf = requestAnimationFrame(tick)
+    const handleScroll = () => {
+      if (navRef.current) {
+        // In the original code, the navbar stays visible. 
+        // We can add a subtle shadow when scrolled if desired.
+        if (window.scrollY > 20) {
+          navRef.current.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        } else {
+          navRef.current.style.boxShadow = 'none';
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll reveal & Stat count-up
+  useEffect(() => {
+    // 1. Reveal elements
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    let revealObserver;
+    
+    if ('IntersectionObserver' in window) {
+      revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-in');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+      revealEls.forEach((el) => revealObserver.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add('is-in'));
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [target, start])
-  return val
-}
 
-/* ------------------------------------------------------------------ */
-/*  SUB-COMPONENTS                                                     */
-/* ------------------------------------------------------------------ */
+    // 2. Stat count-up
+    let statObserver;
+    let counted = false;
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
+    const runCount = (el) => {
+      const target = parseInt(el.getAttribute('data-count'), 10) || 0;
+      const duration = 1500;
+      let start = null;
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+      const tick = (now) => {
+        if (!start) start = now;
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        el.textContent = Math.round(target * eased).toLocaleString();
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
 
-  return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-white/10 bg-[#060916]/80 backdrop-blur-xl'
-          : 'border-b border-transparent bg-transparent'
-      }`}
-    >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:h-20 sm:px-8">
-        {/* Brand */}
-        <Link to="/" className="group flex items-center gap-2.5">
-          <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 text-sm font-black text-[#04060f] shadow-lg shadow-cyan-500/20">
-            LLC
-            <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/30" />
-          </span>
-          <span className="hidden flex-col leading-none sm:flex">
-            <span className="text-sm font-bold tracking-tight text-white">
-              Language Learning Campus
-            </span>
-            <span className="mt-0.5 text-[11px] font-medium tracking-wide text-white/45">
-              Kalmunai · Sri Lanka
-            </span>
-          </span>
-        </Link>
+    const startCounting = () => {
+      if (counted) return;
+      counted = true;
+      document.querySelectorAll('[data-count]').forEach(runCount);
+    };
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.map((l) =>
-            l.to ? (
-              <Link
-                key={l.label}
-                to={l.to}
-                className="rounded-lg px-3.5 py-2 text-sm font-medium text-white/65 transition hover:bg-white/5 hover:text-white"
-              >
-                {l.label}
-              </Link>
-            ) : (
-              <a
-                key={l.label}
-                href={l.href}
-                className="rounded-lg px-3.5 py-2 text-sm font-medium text-white/65 transition hover:bg-white/5 hover:text-white"
-              >
-                {l.label}
-              </a>
-            )
-          )}
-        </nav>
+    if (statsRef.current && 'IntersectionObserver' in window) {
+      statObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              startCounting();
+              statObserver.disconnect();
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      statObserver.observe(statsRef.current);
+    } else {
+      startCounting();
+    }
 
-        {/* Actions */}
-        <div className="hidden items-center gap-3 sm:flex">
-          <Link
-            to="/login"
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-white/80 transition hover:text-white"
-          >
-            Sign in
-          </Link>
-          <Link
-            to="/register"
-            className="group relative overflow-hidden rounded-lg bg-white px-4 py-2 text-sm font-bold text-[#070B18] shadow-lg shadow-white/10 transition hover:shadow-white/20"
-          >
-            <span className="relative z-10">Apply now</span>
-            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-300 transition-transform duration-500 group-hover:translate-x-0" />
-          </Link>
-        </div>
+    return () => {
+      if (revealObserver) revealObserver.disconnect();
+      if (statObserver) statObserver.disconnect();
+    };
+  }, []);
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-          className="grid h-10 w-10 place-items-center rounded-lg border border-white/15 text-white lg:hidden"
-        >
-          <span className="relative block h-3 w-5">
-            <span
-              className={`absolute left-0 h-0.5 w-5 bg-current transition-all ${
-                open ? 'top-1.5 rotate-45' : 'top-0'
-              }`}
-            />
-            <span
-              className={`absolute left-0 top-1.5 h-0.5 w-5 bg-current transition-all ${
-                open ? 'opacity-0' : 'opacity-100'
-              }`}
-            />
-            <span
-              className={`absolute left-0 h-0.5 w-5 bg-current transition-all ${
-                open ? 'top-1.5 -rotate-45' : 'top-3'
-              }`}
-            />
-          </span>
-        </button>
-      </div>
+  const toggleMobileMenu = () => {
+    setIsMobileOpen(!isMobileOpen);
+  };
 
-      {/* Mobile sheet */}
-      <div
-        className={`overflow-hidden border-t border-white/10 bg-[#060916]/95 backdrop-blur-xl transition-all duration-300 lg:hidden ${
-          open ? 'max-h-96' : 'max-h-0'
-        }`}
-      >
-        <div className="space-y-1 px-5 py-4">
-          {NAV_LINKS.map((l) =>
-            l.to ? (
-              <Link
-                key={l.label}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-white/75 hover:bg-white/5"
-              >
-                {l.label}
-              </Link>
-            ) : (
-              <a
-                key={l.label}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-white/75 hover:bg-white/5"
-              >
-                {l.label}
-              </a>
-            )
-          )}
-          <div className="flex gap-2 pt-2">
-            <Link
-              to="/login"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-lg border border-white/15 py-2.5 text-center text-sm font-semibold text-white"
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/register"
-              onClick={() => setOpen(false)}
-              className="flex-1 rounded-lg bg-white py-2.5 text-center text-sm font-bold text-[#070B18]"
-            >
-              Apply now
-            </Link>
-          </div>
-        </div>
-      </div>
-    </header>
-  )
-}
+  const closeMobileMenu = () => {
+    setIsMobileOpen(false);
+  };
 
-function HeroCard() {
-  return (
-    <div className="relative mx-auto w-full max-w-md">
-      {/* glow */}
-      <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-tr from-indigo-500/30 via-cyan-400/20 to-emerald-400/25 blur-2xl" />
-
-      {/* main card */}
-      <div
-        className="relative rounded-2xl border border-white/12 bg-white/[0.055] p-6 shadow-2xl backdrop-blur-xl"
-        style={{ animation: 'float 7s ease-in-out infinite' }}
-      >
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
-              Registration
-            </p>
-            <p className="mt-1.5 font-mono text-lg font-bold tracking-tight text-white">
-              LLC-2026-000128
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-400/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-300">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-400" />
-            Pending
-          </span>
-        </div>
-
-        <div className="my-5 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-
-        <dl className="space-y-3 text-sm">
-          <div className="flex items-center justify-between">
-            <dt className="text-white/40">Student</dt>
-            <dd className="font-semibold text-white">A. Fathima</dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-white/40">Course</dt>
-            <dd className="font-semibold text-white">Spoken English</dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-white/40">Batch</dt>
-            <dd className="font-semibold text-white">Weekend · Apr 2026</dd>
-          </div>
-          <div className="flex items-center justify-between">
-            <dt className="text-white/40">Submitted</dt>
-            <dd className="font-semibold text-white">12 Apr 2026</dd>
-          </div>
-        </dl>
-
-        {/* progress */}
-        <div className="mt-6">
-          <div className="flex items-center gap-1.5">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`h-1.5 flex-1 rounded-full ${
-                  i === 0
-                    ? 'bg-gradient-to-r from-indigo-400 to-cyan-400'
-                    : 'bg-white/10'
-                }`}
-              />
-            ))}
-          </div>
-          <p className="mt-2.5 text-[11px] font-medium text-white/35">
-            Step 1 of 5 · waiting for review
-          </p>
-        </div>
-      </div>
-
-      {/* floating chip */}
-      <div
-        className="absolute -bottom-5 -left-4 flex items-center gap-2 rounded-xl border border-white/12 bg-[#0b1020]/95 px-3.5 py-2.5 shadow-xl backdrop-blur-xl sm:-left-8"
-        style={{ animation: 'float 5.5s ease-in-out infinite reverse' }}
-      >
-        <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-400/15 text-emerald-400">
-          ✓
-        </span>
-        <div className="leading-tight">
-          <p className="text-[11px] font-bold text-white">Batch open</p>
-          <p className="text-[10px] text-white/40">3 seats left</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function StatsStrip() {
-  const ref = useRef(null)
-  const [go, setGo] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setGo(true)
-          io.disconnect()
-        }
-      },
-      { threshold: 0.4 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? -1 : index);
+  };
 
   return (
-    <div ref={ref} className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 md:grid-cols-4">
-      {STATS.map((s) => {
-        const v = useCountUp(s.value, go)
-        return (
-          <div key={s.label} className="bg-[#080c1a] px-6 py-7 text-center">
-            <p className="bg-gradient-to-br from-white to-white/50 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">
-              {v.toLocaleString()}
-              <span className="text-cyan-400">{s.suffix}</span>
-            </p>
-            <p className="mt-1.5 text-xs font-medium uppercase tracking-wider text-white/40">
-              {s.label}
-            </p>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  PAGE                                                               */
-/* ------------------------------------------------------------------ */
-
-export default function Home() {
-  const [faqOpen, setFaqOpen] = useState(0)
-
-  /* scroll reveal */
-  useEffect(() => {
-    const els = document.querySelectorAll('[data-reveal]')
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-in')
-            io.unobserve(e.target)
-          }
-        })
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
-  return (
-    <div className="min-h-screen bg-[#070B18] font-sans text-white antialiased selection:bg-cyan-400/30">
+    <>
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50%      { transform: translateY(-16px); }
+        /* =========================================================
+           TOKENS
+           ========================================================= */
+        :root{
+          --navy: #182B5E;
+          --navy-light: #2A427D;
+          --red: #D9381E;
+          --green: #116530;
+          --orange: #F28C28;
+          
+          --bg: #F7F9FC;
+          --bg-alt: #FFFFFF;
+          
+          --text-main: #182B5E;
+          --text-muted: #5A6B8C;
+          
+          --border-thick: 3px solid var(--navy);
+          --border-thin: 1px solid #CBD5E1;
+          --shadow-hard: 8px 8px 0px 0px var(--navy);
+          --shadow-hard-sm: 4px 4px 0px 0px var(--navy);
         }
-        @keyframes aurora {
-          0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: .55; }
-          33%      { transform: translate3d(6%, -8%, 0) scale(1.15); opacity: .75; }
-          66%      { transform: translate3d(-6%, 6%, 0) scale(.92); opacity: .45; }
+
+        /* =========================================================
+           RESET / BASE (SHARP EDGES)
+           ========================================================= */
+        *,*::before,*::after{box-sizing:border-box; border-radius: 0 !important;}
+        *{margin:0;padding:0}
+        html{
+          scroll-behavior:smooth;
+          scroll-padding-top:6rem;
         }
-        @keyframes marquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
+        body{
+          background:var(--bg);
+          color:var(--text-main);
+          font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+          line-height:1.6;
+          -webkit-font-smoothing:antialiased;
+          overflow-x:hidden;
         }
-        [data-reveal] {
-          opacity: 0;
-          transform: translateY(26px);
-          transition: opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1);
+        img,svg{display:block;max-width:100%}
+        a{color:inherit;text-decoration:none}
+        button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+        ul{list-style:none}
+        ::selection{background:var(--navy);color:#fff}
+
+        /* =========================================================
+           LAYOUT HELPERS
+           ========================================================= */
+        .container{
+          width:100%;
+          max-width:80rem;
+          margin-inline:auto;
+          padding-inline:1.25rem;
         }
-        [data-reveal].is-in { opacity: 1; transform: none; }
-        @media (prefers-reduced-motion: reduce) {
-          [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-          * { animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+        @media(min-width:640px){ .container{padding-inline:2rem} }
+
+        /* =========================================================
+           KEYFRAMES
+           ========================================================= */
+        @keyframes marquee{
+          from{transform:translateX(0)}
+          to{transform:translateX(-50%)}
+        }
+
+        [data-reveal]{
+          opacity:0;
+          transform:translateY(30px);
+          transition:opacity .6s ease-out, transform .6s ease-out;
+          transition-delay:var(--d,0ms);
+        }
+        [data-reveal].is-in{opacity:1;transform:none}
+
+        /* =========================================================
+           NAVBAR
+           ========================================================= */
+        .nav{
+          position:fixed;
+          inset:0 0 auto 0;
+          z-index:50;
+          background:var(--bg-alt);
+          border-bottom:var(--border-thick);
+          transition:transform .3s ease, box-shadow .3s ease;
+        }
+        .nav-inner{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          height:80px;
+        }
+        .brand{display:flex;align-items:center;gap:1rem}
+        .brand-mark{
+          width:3.5rem;
+          height:3.5rem;
+          object-fit:contain;
+          border: 2px solid var(--navy);
+        }
+        .brand-text{display:none;flex-direction:column;line-height:1.1}
+        @media(min-width:640px){ .brand-text{display:flex} }
+        .brand-name{font-size:1.125rem;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;}
+        .brand-sub{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--red);text-transform:uppercase}
+
+        .nav-links{display:none;align-items:center;gap:2rem}
+        @media(min-width:1024px){ .nav-links{display:flex} }
+        .nav-link{
+          font-size:.875rem;
+          font-weight:800;
+          text-transform:uppercase;
+          letter-spacing:.05em;
+          color:var(--navy);
+          transition:color .2s;
+        }
+        .nav-link:hover{color:var(--red)}
+
+        .nav-actions{display:none;align-items:center;gap:1.5rem}
+        @media(min-width:640px){ .nav-actions{display:flex} }
+        .btn-ghost{
+          font-size:.875rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+        }
+        .btn-sm-solid{
+          padding:.75rem 1.5rem;
+          background:var(--navy);
+          color:#fff;
+          font-size:.875rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+          border:2px solid var(--navy);
+          transition:all .2s;
+        }
+        .btn-sm-solid:hover{
+          background:#fff;
+          color:var(--navy);
+          box-shadow:var(--shadow-hard-sm);
+          transform:translate(-2px, -2px);
+        }
+
+        /* Mobile Toggle */
+        .nav-toggle{
+          display:grid;place-items:center;
+          width:3rem;height:3rem;
+          border:2px solid var(--navy);
+        }
+        @media(min-width:1024px){ .nav-toggle{display:none} }
+        .burger{position:relative;display:block;width:1.5rem;height:1rem;}
+        .burger span{position:absolute;left:0;width:100%;height:3px;background:var(--navy);transition:all .3s;}
+        .burger span:nth-child(1){top:0}
+        .burger span:nth-child(2){top:50%;transform:translateY(-50%)}
+        .burger span:nth-child(3){top:100%;transform:translateY(-100%)}
+        .nav-toggle.is-open .burger span:nth-child(1){top:50%;transform:translateY(-50%) rotate(45deg)}
+        .nav-toggle.is-open .burger span:nth-child(2){opacity:0}
+        .nav-toggle.is-open .burger span:nth-child(3){top:50%;transform:translateY(-50%) rotate(-45deg)}
+
+        /* Mobile Sheet */
+        .mobile-sheet{
+          display:grid;grid-template-rows:0fr;overflow:hidden;
+          background:var(--bg-alt);border-bottom:0 solid var(--navy);
+          transition:grid-template-rows .3s ease, border-bottom .3s ease;
+        }
+        .mobile-sheet.open{grid-template-rows:1fr;border-bottom:3px solid var(--navy)}
+        .mobile-sheet > div{overflow:hidden}
+        @media(min-width:1024px){ .mobile-sheet{display:none} }
+        .mobile-inner{padding:1.5rem;}
+        .mobile-link{
+          display:block;padding:1rem 0;
+          font-size:1.125rem;font-weight:800;text-transform:uppercase;
+          border-bottom:1px solid #E2E8F0;
+        }
+        .mobile-cta{display:flex;gap:1rem;margin-top:1.5rem}
+        .mobile-cta a{
+          flex:1;padding:1rem;text-align:center;font-weight:800;text-transform:uppercase;border:2px solid var(--navy);
+        }
+        .mobile-cta .outline{color:var(--navy)}
+        .mobile-cta .solid{background:var(--navy);color:#fff}
+
+        /* =========================================================
+           HERO
+           ========================================================= */
+        .hero{
+          padding-top:10rem;padding-bottom:6rem;
+          background:var(--bg);
+          border-bottom:var(--border-thick);
+        }
+        .hero-grid{display:grid;gap:4rem;align-items:center}
+        @media(min-width:1024px){ .hero-grid{grid-template-columns:1.1fr .9fr;gap:2rem} }
+
+        .hero-eyebrow{
+          display:inline-block;
+          padding:.25rem .75rem;
+          background:var(--orange);
+          color:var(--navy);
+          font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;
+          margin-bottom:1.5rem;
+        }
+
+        .hero h1{
+          font-size:clamp(3rem, 6vw, 5.5rem);
+          font-weight:900;
+          line-height:0.95;
+          letter-spacing:-.04em;
+          color:var(--navy);
+        }
+        .hero h1 em{
+          font-style:normal;
+          color:var(--red);
+        }
+
+        .hero-lead{
+          margin-top:2rem;
+          max-width:30rem;
+          font-size:1.125rem;
+          font-weight:500;
+          color:var(--text-muted);
+          line-height:1.6;
+          border-left:4px solid var(--green);
+          padding-left:1.5rem;
+        }
+
+        .hero-actions{display:flex;gap:1rem;margin-top:3rem;flex-wrap:wrap;}
+        .btn-primary{
+          padding:1.25rem 2.5rem;
+          background:var(--navy);
+          color:#fff;
+          font-size:1rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em;
+          border:2px solid var(--navy);
+          transition:all .2s;
+        }
+        .btn-primary:hover{
+          box-shadow:var(--shadow-hard);
+          transform:translate(-4px, -4px);
+        }
+        .btn-secondary{
+          padding:1.25rem 2.5rem;
+          background:transparent;
+          color:var(--navy);
+          font-size:1rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em;
+          border:2px solid var(--navy);
+          transition:background .2s;
+        }
+        .btn-secondary:hover{background:#E2E8F0}
+
+        .hero-visual{position:relative}
+        .hero-card{
+          position:relative;
+          background:#fff;
+          border:var(--border-thick);
+          box-shadow:var(--shadow-hard);
+          padding:2rem;
+          z-index:2;
+          transition:transform .2s;
+        }
+        .hero-card:hover{transform:translate(-2px, -2px); box-shadow:12px 12px 0px 0px var(--navy);}
+        .card-header{
+          display:flex;justify-content:space-between;align-items:flex-start;
+          border-bottom:2px solid var(--navy);
+          padding-bottom:1.5rem;
+          margin-bottom:1.5rem;
+        }
+        .card-label{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);}
+        .card-number{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;color:var(--navy);margin-top:.25rem;}
+        .badge-pending{
+          background:var(--orange);color:var(--navy);
+          padding:.25rem .5rem;font-size:.75rem;font-weight:900;text-transform:uppercase;
+        }
+        .card-row{display:flex;justify-content:space-between;margin-bottom:1rem;font-size:.9375rem;}
+        .card-row dt{font-weight:600;color:var(--text-muted);}
+        .card-row dd{font-weight:800;color:var(--navy);}
+
+        .floating-chip{
+          position:absolute;
+          bottom:-2rem;left:-2rem;
+          background:#fff;
+          border:var(--border-thick);
+          box-shadow:var(--shadow-hard-sm);
+          padding:1rem 1.5rem;
+          display:flex;align-items:center;gap:1rem;
+          z-index:3;
+        }
+        .chip-icon{
+          width:2.5rem;height:2.5rem;display:grid;place-items:center;
+          background:var(--green);color:#fff;
+        }
+        .chip-title{font-size:.875rem;font-weight:900;text-transform:uppercase;color:var(--navy);}
+        .chip-sub{font-size:.75rem;font-weight:600;color:var(--text-muted);}
+
+        /* =========================================================
+           STATS BAR
+           ========================================================= */
+        .stats{
+          display:grid;grid-template-columns:repeat(2,1fr);
+          border:var(--border-thick);background:#fff;
+          margin-top:6rem;
+        }
+        @media(min-width:768px){ .stats{grid-template-columns:repeat(4,1fr)} }
+        .stat{
+          padding:2rem 1.5rem;text-align:center;
+          border-bottom:2px solid var(--navy);
+          border-right:2px solid var(--navy);
+        }
+        .stat:nth-child(even){border-right:none;}
+        @media(min-width:768px){
+          .stat{border-bottom:none;}
+          .stat:last-child{border-right:none;}
+        }
+        .stat-value{font-size:3rem;font-weight:900;line-height:1;color:var(--navy);letter-spacing:-.05em;}
+        .stat-label{margin-top:.5rem;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--red);}
+
+        /* =========================================================
+           TICKER
+           ========================================================= */
+        .ticker{
+          background:var(--navy);
+          padding:1rem 0;overflow:hidden;
+          border-bottom:var(--border-thick);
+        }
+        .ticker-track{display:flex;width:max-content;animation:marquee 30s linear infinite;}
+        .ticker-group{display:flex;align-items:center;gap:3rem;padding-right:3rem;}
+        .ticker-item{
+          color:#fff;font-size:1rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;
+          display:flex;align-items:center;gap:1rem;
+        }
+        .ticker-item::before{content:'';width:8px;height:8px;background:var(--orange);}
+
+        /* =========================================================
+           SECTIONS
+           ========================================================= */
+        .section{padding:7rem 0; background:var(--bg);}
+        .section-bg{background:var(--bg-alt);border-bottom:var(--border-thick);}
+        .section-title{
+          font-size:clamp(2rem, 4vw, 3rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;color:var(--navy);
+          max-width:40rem;
+        }
+        .section-desc{margin-top:1rem;font-size:1.125rem;color:var(--text-muted);max-width:35rem;}
+
+        /* =========================================================
+           COURSES
+           ========================================================= */
+        .courses-grid{display:grid;gap:2rem;margin-top:4rem;}
+        @media(min-width:768px){ .courses-grid{grid-template-columns:repeat(3,1fr)} }
+        .course-card{
+          background:#fff;border:var(--border-thick);
+          padding:2rem;position:relative;
+          transition:transform .2s, box-shadow .2s;
+        }
+        .course-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-hard);}
+        .course-card::before{content:'';position:absolute;top:-3px;left:-3px;right:-3px;height:8px;}
+        .course-card.red::before{background:var(--red);}
+        .course-card.green::before{background:var(--green);}
+        .course-card.orange::before{background:var(--orange);}
+
+        .course-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;}
+        .course-icon{
+          width:3rem;height:3rem;background:#F1F5F9;border:2px solid var(--navy);
+          display:grid;place-items:center;color:var(--navy);
+        }
+        .pill-open{
+          border:2px solid var(--green);padding:.25rem .5rem;
+          font-size:.75rem;font-weight:900;text-transform:uppercase;color:var(--green);
+        }
+        .course-name{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;color:var(--navy);}
+        .course-meta{margin-top:1.5rem;border-top:2px solid var(--navy);padding-top:1.5rem;display:flex;flex-direction:column;gap:.75rem;}
+        .meta-row{display:flex;justify-content:space-between;font-size:.875rem;font-weight:600;}
+        .meta-row dt{color:var(--text-muted);}
+        .meta-row dd{color:var(--navy);font-weight:800;}
+        .course-link{
+          display:inline-block;margin-top:2rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);
+          border-bottom:3px solid var(--navy);padding-bottom:.25rem;
+        }
+        .course-card:hover .course-link{color:var(--red);border-color:var(--red);}
+
+        /* =========================================================
+           FEATURES
+           ========================================================= */
+        .bento{display:grid;gap:1.5rem;margin-top:4rem;}
+        @media(min-width:768px){ .bento{grid-template-columns:repeat(3,1fr)} }
+        .bento-card{
+          background:#fff;border:var(--border-thick);padding:2.5rem;
+          transition:background .2s;
+        }
+        .bento-card:hover{background:#F8FAFC;}
+        .bento-card.span-2{grid-column:span 2;}
+        .bento-icon{
+          width:3rem;height:3rem;background:var(--navy);color:#fff;display:grid;place-items:center;margin-bottom:1.5rem;
+        }
+        .bento-card h3{font-size:1.25rem;font-weight:900;color:var(--navy);margin-bottom:1rem;}
+        .bento-card p{font-size:1rem;color:var(--text-muted);line-height:1.6;}
+
+        /* =========================================================
+           STATUS SECTION
+           ========================================================= */
+        .status-section{
+          background:var(--navy);color:#fff;border-bottom:var(--border-thick);
+        }
+        .status-grid{display:grid;gap:4rem;align-items:center;}
+        @media(min-width:1024px){ .status-grid{grid-template-columns:1fr 1fr} }
+        .status-section .section-title{color:#fff;}
+        .status-section .section-desc{color:#A5B4FC;}
+
+        .status-box{
+          border:3px solid #fff;background:rgba(255,255,255,0.05);padding:2rem;
+        }
+        .status-row{
+          display:flex;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid rgba(255,255,255,0.2);
+        }
+        .status-row:last-child{border-bottom:none;}
+        .status-num{
+          width:2.5rem;height:2.5rem;display:grid;place-items:center;font-weight:900;font-size:1.25rem;flex-shrink:0;
+        }
+        .num-1{background:var(--orange);color:var(--navy);}
+        .num-2{background:var(--red);color:#fff;}
+        .num-3{background:var(--green);color:#fff;}
+        .status-code{font-size:1.125rem;font-weight:900;letter-spacing:.05em;}
+        .status-text{font-size:.9375rem;color:#CBD5E1;margin-top:.25rem;}
+
+        /* =========================================================
+           FAQ
+           ========================================================= */
+        .faq-list{margin-top:4rem;border-top:var(--border-thick);}
+        .faq-item{border-bottom:var(--border-thick);}
+        .faq-q{
+          width:100%;display:flex;justify-content:space-between;align-items:center;
+          padding:2rem 0;text-align:left;font-size:1.25rem;font-weight:900;color:var(--navy);
+        }
+        .faq-plus{
+          font-size:2rem;font-weight:400;line-height:0;transition:transform .3s;
+        }
+        .faq-item.open .faq-plus{transform:rotate(45deg);color:var(--red);}
+        .faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease;}
+        .faq-item.open .faq-a{grid-template-rows:1fr;}
+        .faq-a > div{overflow:hidden;}
+        .faq-a p{padding-bottom:2rem;font-size:1.125rem;color:var(--text-muted);max-width:50rem;}
+
+        /* =========================================================
+           FINAL CTA
+           ========================================================= */
+        .cta-wrap{padding:0 1.25rem 6rem; background:var(--bg);}
+        @media(min-width:640px){ .cta-wrap{padding:0 2rem 8rem;} }
+        .cta{
+          max-width:80rem;margin:0 auto;
+          background:var(--orange);
+          border:var(--border-thick);
+          box-shadow:var(--shadow-hard);
+          padding:5rem 2rem;text-align:center;
+        }
+        .cta h2{font-size:clamp(2.5rem, 5vw, 4rem);font-weight:900;letter-spacing:-.03em;line-height:1.1;color:var(--navy);}
+        .cta p{margin:1.5rem auto 0;max-width:30rem;font-size:1.125rem;font-weight:600;color:var(--navy);}
+        .cta-actions{display:flex;gap:1rem;justify-content:center;margin-top:3rem;flex-wrap:wrap;}
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+        .footer{background:var(--navy);color:#fff;border-top:var(--border-thick);padding:5rem 0 2rem;}
+        .footer-grid{display:grid;gap:3rem;}
+        @media(min-width:768px){ .footer-grid{grid-template-columns:2fr 1fr 1fr;} }
+        .footer-brand{
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          font-size:1.5rem;font-weight:900;letter-spacing:-.02em;margin-bottom:1rem;
+        }
+        .footer-desc{color:#CBD5E1;max-width:20rem;font-size:.9375rem;}
+        .footer-title{font-size:.875rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1.5rem;color:var(--orange);}
+        .footer-links{display:flex;flex-direction:column;gap:1rem;}
+        .footer-links a{font-size:.9375rem;font-weight:600;color:#fff;transition:color .2s;}
+        .footer-links a:hover{color:var(--orange);}
+        .footer-bottom{
+          margin-top:5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.2);
+          display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+          font-size:.875rem;color:#CBD5E1;
+        }
+
+        @media(prefers-reduced-motion:reduce){
+          html{scroll-behavior:auto}
+          [data-reveal]{opacity:1 !important;transform:none !important;transition:none !important}
+          *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
         }
       `}</style>
 
-      <Navbar />
+      <div className="landing-root" style={{ background: 'var(--bg)', color: 'var(--text-main)', minHeight: '100vh' }}>
+        {/* ===================== NAVBAR ===================== */}
+      <header className="nav" ref={navRef}>
+        <div className="container nav-inner">
+          <a href="#" className="brand">
+            <img src="https://llc-edu.com/wp-content/uploads/2025/06/CAMPUS-2-150x150.png" alt="LLC Logo" className="brand-mark" />
+            <span className="brand-text">
+              <span className="brand-name">Language Learning</span>
+              <span className="brand-sub">Kalmunai · LK</span>
+            </span>
+          </a>
 
-      {/* ============================================================ */}
-      {/* HERO                                                         */}
-      {/* ============================================================ */}
-      <section className="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
-        {/* aurora background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div
-            className="absolute -top-40 left-1/4 h-[36rem] w-[36rem] rounded-full bg-indigo-600/35 blur-[120px]"
-            style={{ animation: 'aurora 18s ease-in-out infinite' }}
-          />
-          <div
-            className="absolute -top-20 right-0 h-[30rem] w-[30rem] rounded-full bg-cyan-500/25 blur-[120px]"
-            style={{ animation: 'aurora 22s ease-in-out infinite reverse' }}
-          />
-          <div
-            className="absolute bottom-0 left-0 h-[26rem] w-[26rem] rounded-full bg-emerald-500/20 blur-[120px]"
-            style={{ animation: 'aurora 26s ease-in-out infinite' }}
-          />
-          {/* grid */}
-          <div
-            className="absolute inset-0 opacity-[0.16]"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, rgba(255,255,255,.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.14) 1px, transparent 1px)',
-              backgroundSize: '64px 64px',
-              maskImage:
-                'radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 100%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 100%)',
-            }}
-          />
-        </div>
+          <nav className="nav-links">
+            <a className="nav-link" href="#courses">Courses</a>
+            <a className="nav-link" href="#how-it-works">Process</a>
+            <a className="nav-link" href="#status">Status</a>
+            <a className="nav-link" href="#faq">FAQ</a>
+          </nav>
 
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
-            {/* copy */}
-            <div>
-              <div
-                data-reveal
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-3.5 py-1.5 backdrop-blur"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                <span className="text-xs font-semibold tracking-wide text-white/70">
-                  Admissions open · 2026 intake
-                </span>
-              </div>
-
-              <h1
-                data-reveal
-                style={{ transitionDelay: '80ms' }}
-                className="mt-6 text-4xl font-black leading-[1.05] tracking-[-0.03em] sm:text-6xl lg:text-[4.25rem]"
-              >
-                Your seat at&nbsp;LLC is
-                <br className="hidden sm:block" />{' '}
-                <span className="relative inline-block">
-                  <span className="bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-300 bg-clip-text text-transparent">
-                    one form away.
-                  </span>
-                  <svg
-                    className="absolute -bottom-2 left-0 h-3 w-full text-cyan-400/50"
-                    viewBox="0 0 300 12"
-                    fill="none"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d="M2 9C60 3 120 2 180 5c40 2 80 4 118 2"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-              </h1>
-
-              <p
-                data-reveal
-                style={{ transitionDelay: '160ms' }}
-                className="mt-7 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg"
-              >
-                Browse courses, pick an open batch and register in under two
-                minutes. Your account is created in the same step — then track
-                your application status live from your dashboard.
-              </p>
-
-              <div
-                data-reveal
-                style={{ transitionDelay: '240ms' }}
-                className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
-              >
-                <Link
-                  to="/register"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 via-cyan-500 to-emerald-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-500/25 transition-transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <span className="relative z-10">Start my registration</span>
-                  <span className="relative z-10 transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                  <span className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,.35)_50%,transparent_75%)] bg-[length:200%_100%] animate-[marquee_1.6s_linear_infinite]" />
-                </Link>
-
-                <Link
-                  to="/courses"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white/85 backdrop-blur transition hover:border-white/30 hover:bg-white/[0.08]"
-                >
-                  Browse courses
-                </Link>
-              </div>
-
-              <ul
-                data-reveal
-                style={{ transitionDelay: '320ms' }}
-                className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] font-medium text-white/40"
-              >
-                {['No account needed to explore', 'Email verification', 'Live status tracking'].map(
-                  (t) => (
-                    <li key={t} className="flex items-center gap-1.5">
-                      <span className="text-emerald-400">✓</span>
-                      {t}
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
-
-            {/* visual */}
-            <div data-reveal style={{ transitionDelay: '200ms' }} className="relative">
-              <HeroCard />
-            </div>
+          <div className="nav-actions">
+            <a className="btn-ghost" href="#login">Sign in</a>
+            <a className="btn-sm-solid" href="#register">Apply Now</a>
           </div>
 
-          {/* stats */}
-          <div data-reveal style={{ transitionDelay: '120ms' }} className="mt-20">
-            <StatsStrip />
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* TICKER                                                       */}
-      {/* ============================================================ */}
-      <section className="relative border-y border-white/10 bg-white/[0.02] py-5">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#070B18] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#070B18] to-transparent" />
-        <div className="flex overflow-hidden">
-          <div
-            className="flex shrink-0 items-center gap-10 pr-10"
-            style={{ animation: 'marquee 34s linear infinite' }}
+          <button 
+            className={`nav-toggle ${isMobileOpen ? 'is-open' : ''}`} 
+            onClick={toggleMobileMenu} 
+            aria-label="Menu"
           >
-            {[...TICKER, ...TICKER].map((t, i) => (
-              <span
-                key={i}
-                className="flex items-center gap-3 whitespace-nowrap text-sm font-semibold uppercase tracking-[0.18em] text-white/30"
-              >
-                <span className="h-1 w-1 rounded-full bg-cyan-400/60" />
-                {t}
-              </span>
-            ))}
-          </div>
+            <span className="burger"><span></span><span></span><span></span></span>
+          </button>
         </div>
-      </section>
 
-      {/* ============================================================ */}
-      {/* COURSES                                                      */}
-      {/* ============================================================ */}
-      <section id="courses" className="relative py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-            <div data-reveal className="max-w-2xl">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-                The catalogue
-              </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-                Only batches you can actually join
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-white/55">
-                Closed batches never appear here, and the server re-checks
-                availability the moment you submit. What you see is what you
-                get.
-              </p>
+        <div className={`mobile-sheet ${isMobileOpen ? 'open' : ''}`}>
+          <div>
+            <div className="mobile-inner">
+              <a className="mobile-link" href="#courses" onClick={closeMobileMenu}>Courses</a>
+              <a className="mobile-link" href="#how-it-works" onClick={closeMobileMenu}>Process</a>
+              <a className="mobile-link" href="#status" onClick={closeMobileMenu}>Status</a>
+              <a className="mobile-link" href="#faq" onClick={closeMobileMenu}>FAQ</a>
+              <div className="mobile-cta">
+                <a className="outline" href="#login" onClick={closeMobileMenu}>Sign in</a>
+                <a className="solid" href="#register" onClick={closeMobileMenu}>Apply</a>
+              </div>
             </div>
-            <Link
-              data-reveal
-              to="/courses"
-              className="shrink-0 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white/80 transition hover:border-white/35 hover:text-white"
-            >
-              View all courses →
-            </Link>
-          </div>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {COURSES.map((c, i) => (
-              <article
-                key={c.name}
-                data-reveal
-                style={{ transitionDelay: `${i * 100}ms` }}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:bg-white/[0.06]"
-              >
-                <div
-                  className={`absolute inset-x-0 -top-px h-px bg-gradient-to-r ${c.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-                />
-                <div className="flex items-start justify-between">
-                  <span className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-2xl">
-                    {c.icon}
-                  </span>
-                  <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-300">
-                    {c.batches} open
-                  </span>
-                </div>
-
-                <h3 className="mt-5 text-lg font-bold tracking-tight text-white">
-                  {c.name}
-                </h3>
-                <p className="mt-1 text-sm text-white/45">{c.tagline}</p>
-
-                <dl className="mt-5 space-y-2 border-t border-white/10 pt-4 text-[13px]">
-                  <div className="flex items-center justify-between">
-                    <dt className="text-white/35">Duration</dt>
-                    <dd className="font-semibold text-white/80">{c.duration}</dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <dt className="shrink-0 text-white/35">Schedule</dt>
-                    <dd className="text-right font-semibold text-white/80">
-                      {c.schedule}
-                    </dd>
-                  </div>
-                </dl>
-
-                <Link
-                  to="/courses"
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-cyan-400 transition group-hover:gap-2.5"
-                >
-                  View batches <span>→</span>
-                </Link>
-              </article>
-            ))}
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* ============================================================ */}
-      {/* HOW IT WORKS                                                 */}
-      {/* ============================================================ */}
-      <section
-        id="how-it-works"
-        className="relative border-y border-white/10 bg-white/[0.02] py-24 sm:py-32"
-      >
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div data-reveal className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-              How it works
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Four steps. Zero office visits.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-white/55">
-              The whole journey is designed around a single idea: you should
-              never wonder whether your application went through.
-            </p>
+      <main>
+        {/* ===================== HERO ===================== */}
+        <section className="hero">
+          <div className="container hero-grid">
+            <div data-reveal="">
+              <div className="hero-eyebrow">Admissions Open · 2026</div>
+              <h1>Your seat is <em>one form</em> away.</h1>
+              <p className="hero-lead">
+                Browse courses, pick an open batch and register in under two minutes. Your account is created in the same step — then track your application status live.
+              </p>
+              <div className="hero-actions">
+                <a className="btn-primary" href="#register">Start Registration</a>
+                <a className="btn-secondary" href="#courses">Browse Courses</a>
+              </div>
+            </div>
+
+            <div className="hero-visual" data-reveal="" style={{ '--d': '200ms' }}>
+              <div className="hero-card">
+                <div className="card-header">
+                  <div>
+                    <p className="card-label">Reference</p>
+                    <p className="card-number">LLC-2026-000128</p>
+                  </div>
+                  <span className="badge-pending">Pending</span>
+                </div>
+                <dl>
+                  <div className="card-row"><dt>Student</dt><dd>A. Fathima</dd></div>
+                  <div className="card-row"><dt>Course</dt><dd>Spoken English</dd></div>
+                  <div className="card-row"><dt>Batch</dt><dd>Weekend · Apr 2026</dd></div>
+                  <div className="card-row"><dt>Submitted</dt><dd>12 Apr 2026</dd></div>
+                </dl>
+              </div>
+              <div className="floating-chip">
+                <div className="chip-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div>
+                  <div className="chip-title">Batch Open</div>
+                  <div className="chip-sub">3 seats left</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="relative mt-16">
-            {/* connector */}
-            <div className="pointer-events-none absolute left-0 right-0 top-9 hidden h-px bg-gradient-to-r from-transparent via-white/15 to-transparent lg:block" />
+          <div className="container">
+            <div className="stats" data-reveal="" style={{ '--d': '300ms' }} ref={statsRef}>
+              <div className="stat">
+                <div className="stat-value"><span className="num" data-count="12">0</span>+</div>
+                <div className="stat-label">Courses</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value"><span className="num" data-count="35">0</span>+</div>
+                <div className="stat-label">Batches</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value"><span className="num" data-count="2400">0</span>+</div>
+                <div className="stat-label">Students</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value"><span className="num" data-count="48">0</span>h</div>
+                <div className="stat-label">Avg Review</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-              {STEPS.map((s, i) => (
-                <div
-                  key={s.n}
-                  data-reveal
-                  style={{ transitionDelay: `${i * 110}ms` }}
-                  className="relative"
-                >
-                  <div className="relative z-10 inline-grid h-[4.5rem] w-[4.5rem] place-items-center rounded-2xl border border-white/12 bg-[#0b1020] text-xl font-black text-transparent shadow-xl">
-                    <span className="bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-300 bg-clip-text">
-                      {s.n}
-                    </span>
+        {/* ===================== TICKER ===================== */}
+        <section className="ticker" aria-hidden="true">
+          <div className="ticker-track">
+            <div className="ticker-group">
+              <span className="ticker-item">Spoken English</span>
+              <span className="ticker-item">Arabic</span>
+              <span className="ticker-item">Tamil</span>
+              <span className="ticker-item">IELTS Prep</span>
+              <span className="ticker-item">French</span>
+              <span className="ticker-item">Quran &amp; Tajweed</span>
+            </div>
+            <div className="ticker-group">
+              <span className="ticker-item">Spoken English</span>
+              <span className="ticker-item">Arabic</span>
+              <span className="ticker-item">Tamil</span>
+              <span className="ticker-item">IELTS Prep</span>
+              <span className="ticker-item">French</span>
+              <span className="ticker-item">Quran &amp; Tajweed</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== COURSES ===================== */}
+        <section className="section" id="courses">
+          <div className="container">
+            <h2 className="section-title" data-reveal="">Active Catalogue.</h2>
+            <p className="section-desc" data-reveal="" style={{ '--d': '100ms' }}>Only batches that are currently open for registration. The server re-checks availability on submission.</p>
+
+            <div className="courses-grid">
+              <article className="course-card red" data-reveal="" style={{ '--d': '0ms' }}>
+                <div className="course-top">
+                  <div className="course-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                   </div>
-                  <h3 className="mt-5 text-base font-bold tracking-tight text-white">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/50">
-                    {s.body}
-                  </p>
+                  <span className="pill-open">3 Open</span>
+                </div>
+                <h3 className="course-name">Spoken English</h3>
+                <div className="course-meta">
+                  <div className="meta-row"><dt>Duration</dt><dd>3 Months</dd></div>
+                  <div className="meta-row"><dt>Schedule</dt><dd>Weekends</dd></div>
+                </div>
+                <a className="course-link" href="#register">View Batches</a>
+              </article>
+
+              <article className="course-card green" data-reveal="" style={{ '--d': '100ms' }}>
+                <div className="course-top">
+                  <div className="course-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                  </div>
+                  <span className="pill-open">2 Open</span>
+                </div>
+                <h3 className="course-name">Quran &amp; Tajweed</h3>
+                <div className="course-meta">
+                  <div className="meta-row"><dt>Duration</dt><dd>6 Months</dd></div>
+                  <div className="meta-row"><dt>Schedule</dt><dd>Weekdays</dd></div>
+                </div>
+                <a className="course-link" href="#register">View Batches</a>
+              </article>
+
+              <article className="course-card orange" data-reveal="" style={{ '--d': '200ms' }}>
+                <div className="course-top">
+                  <div className="course-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                  </div>
+                  <span className="pill-open">1 Open</span>
+                </div>
+                <h3 className="course-name">IELTS Preparation</h3>
+                <div className="course-meta">
+                  <div className="meta-row"><dt>Duration</dt><dd>10 Weeks</dd></div>
+                  <div className="meta-row"><dt>Schedule</dt><dd>Weekends</dd></div>
+                </div>
+                <a className="course-link" href="#register">View Batches</a>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== FEATURES ===================== */}
+        <section className="section section-bg">
+          <div className="container">
+            <h2 className="section-title" data-reveal="">Built for reliability.</h2>
+            <p className="section-desc" data-reveal="" style={{ '--d': '100ms' }}>The engineering nobody notices — until it saves them.</p>
+
+            <div className="bento">
+              <div className="bento-card span-2" data-reveal="" style={{ '--d': '0ms' }}>
+                <div className="bento-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <h3>Atomic Registration</h3>
+                <p>Account, profile, and application are written in one MySQL transaction. If anything fails, nothing is half-created.</p>
+              </div>
+
+              <div className="bento-card" data-reveal="" style={{ '--d': '100ms' }}>
+                <div className="bento-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3>Bank-grade Security</h3>
+                <p>Argon2/bcrypt hashing, HTTP-only Secure cookies, and generic auth errors.</p>
+              </div>
+
+              <div className="bento-card" data-reveal="" style={{ '--d': '200ms' }}>
+                <div className="bento-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </div>
+                <h3>Mobile First</h3>
+                <p>Designed for a phone in one hand on a slow connection.</p>
+              </div>
+
+              <div className="bento-card" data-reveal="" style={{ '--d': '300ms' }}>
+                <div className="bento-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <h3>Verified Email</h3>
+                <p>Single-use verification and reset tokens that expire.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== STATUS ===================== */}
+        <section className="section status-section" id="status">
+          <div className="container status-grid">
+            <div data-reveal="">
+              <h2 className="section-title">Track your admission.</h2>
+              <p className="section-desc">Every registration moves through a defined set of states. No phone calls, no guessing.</p>
+            </div>
+
+            <div className="status-box" data-reveal="" style={{ '--d': '200ms' }}>
+              <div className="status-row">
+                <div className="status-num num-1">1</div>
+                <div>
+                  <div className="status-code">PENDING</div>
+                  <div className="status-text">Application received and waiting in the review queue.</div>
+                </div>
+              </div>
+              <div className="status-row">
+                <div className="status-num num-2">2</div>
+                <div>
+                  <div className="status-code">UNDER_REVIEW</div>
+                  <div className="status-text">An administrator is checking your details.</div>
+                </div>
+              </div>
+              <div className="status-row">
+                <div className="status-num num-3">3</div>
+                <div>
+                  <div className="status-code">CONFIRMED</div>
+                  <div className="status-text">Your seat is secured. Welcome to LLC.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== FAQ ===================== */}
+        <section className="section" id="faq">
+          <div className="container" style={{ maxWidth: '60rem' }}>
+            <h2 className="section-title" data-reveal="">Questions.</h2>
+            
+            <div className="faq-list" data-reveal="" style={{ '--d': '100ms' }}>
+              {[
+                {
+                  q: "Do I need an account before I register?",
+                  a: "No. Your account is created as part of the registration form. You choose your email and password while applying."
+                },
+                {
+                  q: "Does submitting the form confirm my admission?",
+                  a: "No. Every new registration starts as PENDING. An administrator reviews it and moves it to UNDER_REVIEW and then CONFIRMED."
+                },
+                {
+                  q: "Can I register for more than one course?",
+                  a: "Yes. Once you have an account you can add registrations for other courses and batches from your dashboard."
+                }
+              ].map((faq, index) => (
+                <div key={index} className={`faq-item ${openFaq === index ? 'open' : ''}`}>
+                  <button className="faq-q" onClick={() => toggleFaq(index)}>
+                    <span>{faq.q}</span>
+                    <span className="faq-plus">+</span>
+                  </button>
+                  <div className="faq-a">
+                    <div><p>{faq.a}</p></div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ============================================================ */}
-      {/* FEATURES BENTO                                               */}
-      {/* ============================================================ */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div data-reveal className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-              Built properly
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              The engineering nobody notices — until it saves them
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {FEATURES.map((f, i) => (
-              <div
-                key={f.title}
-                data-reveal
-                style={{ transitionDelay: `${i * 80}ms` }}
-                className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-7 transition-all duration-300 hover:border-white/25 hover:from-white/[0.09] ${f.span}`}
-              >
-                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-500/10 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
-                <span className="inline-grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-lg">
-                  {f.icon}
-                </span>
-                <h3 className="mt-5 text-base font-bold tracking-tight text-white">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
-                  {f.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* STATUS PIPELINE (dark feature block)                         */}
-      {/* ============================================================ */}
-      <section id="status" className="relative overflow-hidden py-24 sm:py-32">
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/2 top-1/2 h-[40rem] w-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/20 blur-[140px]" />
-        </div>
-
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="grid items-center gap-14 lg:grid-cols-2">
-            <div data-reveal>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-                Live status
-              </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-                You always know exactly where you stand
-              </h2>
-              <p className="mt-4 max-w-lg text-base leading-relaxed text-white/55">
-                Every registration moves through a defined set of states, and
-                every change is recorded with a timestamp. No phone calls, no
-                guessing.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-2">
-                {['PENDING', 'UNDER_REVIEW', 'CONFIRMED', 'REJECTED', 'CANCELLED'].map(
-                  (s) => (
-                    <span
-                      key={s}
-                      className="rounded-lg border border-white/12 bg-white/[0.04] px-3 py-1.5 font-mono text-[11px] font-semibold tracking-wide text-white/60"
-                    >
-                      {s}
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-
-            <div data-reveal style={{ transitionDelay: '140ms' }} className="space-y-4">
-              {STATUSES.map((s, i) => {
-                const tone = {
-                  indigo: 'border-indigo-400/30 bg-indigo-400/10 text-indigo-300',
-                  cyan: 'border-cyan-400/30 bg-cyan-400/10 text-cyan-300',
-                  emerald: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300',
-                }[s.tone]
-
-                return (
-                  <div
-                    key={s.key}
-                    className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:border-white/25 hover:bg-white/[0.06]"
-                  >
-                    <div className="relative flex flex-col items-center">
-                      <span
-                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border text-xs font-black ${tone}`}
-                      >
-                        {i + 1}
-                      </span>
-                      {i < STATUSES.length - 1 && (
-                        <span className="mt-1 h-6 w-px bg-white/15" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-mono text-sm font-bold tracking-tight text-white">
-                        {s.key}
-                      </p>
-                      <p className="mt-1 text-sm leading-relaxed text-white/50">
-                        {s.body}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-              <p className="pl-1 text-xs text-white/30">
-                REJECTED and CANCELLED are terminal states and are also logged in
-                full history.
-              </p>
+        {/* ===================== FINAL CTA ===================== */}
+        <section className="cta-wrap">
+          <div className="cta" data-reveal="">
+            <h2>Take your seat.</h2>
+            <p>Registration takes about two minutes. You will receive a unique reference number the moment you submit.</p>
+            <div className="cta-actions">
+              <a className="btn-primary" href="#register">Apply Now</a>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ============================================================ */}
-      {/* TESTIMONIALS                                                 */}
-      {/* ============================================================ */}
-      <section className="border-y border-white/10 bg-white/[0.02] py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div data-reveal className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-              Voices
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              From the people who used it
-            </h2>
-          </div>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((t, i) => (
-              <figure
-                key={t.name}
-                data-reveal
-                style={{ transitionDelay: `${i * 100}ms` }}
-                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.035] p-7 transition hover:border-white/25"
-              >
-                <blockquote className="text-[15px] leading-relaxed text-white/70">
-                  <span className="mr-1 text-2xl leading-none text-cyan-400">“</span>
-                  {t.quote}
-                </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-black text-[#070B18]">
-                    {t.name.charAt(0)}
-                  </span>
-                  <div>
-                    <p className="text-sm font-bold text-white">{t.name}</p>
-                    <p className="text-[12px] text-white/40">{t.meta}</p>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* FAQ                                                          */}
-      {/* ============================================================ */}
-      <section id="faq" className="py-24 sm:py-32">
-        <div className="mx-auto max-w-4xl px-5 sm:px-8">
-          <div data-reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-400">
-              Questions
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Everything you might ask
-            </h2>
-          </div>
-
-          <div className="mt-12 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]">
-            {FAQS.map((f, i) => {
-              const open = faqOpen === i
-              return (
-                <div key={f.q}>
-                  <button
-                    onClick={() => setFaqOpen(open ? -1 : i)}
-                    aria-expanded={open}
-                    className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition hover:bg-white/[0.03]"
-                  >
-                    <span className="text-[15px] font-semibold text-white/90">
-                      {f.q}
-                    </span>
-                    <span
-                      className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/15 text-sm transition-transform duration-300 ${
-                        open ? 'rotate-45 border-cyan-400/50 text-cyan-400' : 'text-white/50'
-                      }`}
-                    >
-                      +
-                    </span>
-                  </button>
-                  <div
-                    className="grid transition-all duration-300 ease-out"
-                    style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
-                  >
-                    <div className="overflow-hidden">
-                      <p className="px-6 pb-5 pr-14 text-sm leading-relaxed text-white/50">
-                        {f.a}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* FINAL CTA                                                    */}
-      {/* ============================================================ */}
-      <section className="px-5 pb-24 sm:px-8 sm:pb-32">
-        <div
-          data-reveal
-          className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-indigo-600/25 via-[#0b1020] to-emerald-600/20 px-6 py-16 text-center sm:px-14 sm:py-24"
-        >
-          <div aria-hidden className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-20 top-0 h-64 w-64 rounded-full bg-cyan-500/25 blur-[90px]" />
-            <div className="absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-emerald-500/25 blur-[90px]" />
-            <div
-              className="absolute inset-0 opacity-[0.12]"
-              style={{
-                backgroundImage:
-                  'linear-gradient(to right, rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.5) 1px, transparent 1px)',
-                backgroundSize: '48px 48px',
-                maskImage:
-                  'radial-gradient(ellipse 60% 70% at 50% 50%, #000 30%, transparent 100%)',
-                WebkitMaskImage:
-                  'radial-gradient(ellipse 60% 70% at 50% 50%, #000 30%, transparent 100%)',
-              }}
-            />
-          </div>
-
-          <div className="relative">
-            <h2 className="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">
-              The next batch fills up.
-              <span className="bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent">
-                {' '}
-                Take your seat.
-              </span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/55">
-              Registration takes about two minutes. You will receive a unique
-              reference number the moment you submit.
-            </p>
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-[#070B18] shadow-xl shadow-black/30 transition hover:-translate-y-0.5 hover:shadow-black/50"
-              >
-                Apply now <span>→</span>
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-8 py-4 text-sm font-semibold text-white/85 transition hover:border-white/40 hover:bg-white/5"
-              >
-                I already registered
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* FOOTER                                                       */}
-      {/* ============================================================ */}
-      <footer className="border-t border-white/10 bg-[#05080f]">
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
-          <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      {/* ===================== FOOTER ===================== */}
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-grid">
             <div>
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-cyan-400 to-emerald-400 text-sm font-black text-[#04060f]">
-                  LLC
-                </span>
-                <span className="text-sm font-bold text-white">
-                  Language Learning Campus
-                </span>
+              <div className="footer-brand">
+                <img src="https://llc-edu.com/wp-content/uploads/2025/06/CAMPUS-2-150x150.png" alt="LLC Logo" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+                LLC KALMUNAI
               </div>
-              <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
-                Kalmunai, Sri Lanka. Practical language education with a
-                registration process that respects your time.
-              </p>
+              <p className="footer-desc">Practical language education with a registration process that respects your time.</p>
             </div>
-
-            {[
-              {
-                title: 'Explore',
-                links: [
-                  { label: 'Courses', to: '/courses' },
-                  { label: 'How it works', href: '#how-it-works' },
-                  { label: 'FAQ', href: '#faq' },
-                ],
-              },
-              {
-                title: 'Students',
-                links: [
-                  { label: 'Register', to: '/register' },
-                  { label: 'Sign in', to: '/login' },
-                  { label: 'Forgot password', to: '/forgot-password' },
-                ],
-              },
-              {
-                title: 'Contact',
-                links: [
-                  { label: 'hello@llc.lk', href: 'mailto:hello@llc.lk' },
-                  { label: '+94 77 000 0000', href: 'tel:+94770000000' },
-                  { label: 'Kalmunai, LK', href: '#' },
-                ],
-              },
-            ].map((col) => (
-              <div key={col.title}>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/35">
-                  {col.title}
-                </p>
-                <ul className="mt-4 space-y-2.5">
-                  {col.links.map((l) => (
-                    <li key={l.label}>
-                      {l.to ? (
-                        <Link
-                          to={l.to}
-                          className="text-sm text-white/55 transition hover:text-white"
-                        >
-                          {l.label}
-                        </Link>
-                      ) : (
-                        <a
-                          href={l.href}
-                          className="text-sm text-white/55 transition hover:text-white"
-                        >
-                          {l.label}
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+            <div>
+              <div className="footer-title">Explore</div>
+              <div className="footer-links">
+                <a href="#courses">Courses</a>
+                <a href="#faq">FAQ</a>
+                <a href="#login">Sign In</a>
               </div>
-            ))}
+            </div>
+            <div>
+              <div className="footer-title">Contact</div>
+              <div className="footer-links">
+                <a href="mailto:hello@llc.lk">hello@llc.lk</a>
+                <a href="tel:+94770000000">+94 77 000 0000</a>
+              </div>
+            </div>
           </div>
-
-          <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-7 sm:flex-row">
-            <p className="text-xs text-white/30">
-              © {new Date().getFullYear()} Language Learning Campus. All rights
-              reserved.
-            </p>
-            <p className="text-xs text-white/30">
-              Built with Node.js · Express · MySQL · React
-            </p>
+          <div className="footer-bottom">
+            <span>© {new Date().getFullYear()} Language Learning Campus.</span>
+            <span>Built for reliability.</span>
           </div>
         </div>
       </footer>
-    </div>
-  )
+      </div>
+    </>
+  );
 }
