@@ -1,0 +1,15 @@
+{
+  "name": "student-registration-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Language Learning Campus - Student Registration System",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "node backend/src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
