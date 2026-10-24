@@ -2,36 +2,442 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   LLC DESIGN SYSTEM TOKENS (Strictly matched to sample.jsx)
+   ========================================================= */
 :root {
-  color-scheme: light;
+  --navy: #182B5E;
+  --navy-light: #2A427D;
+  --red: #D9381E;
+  --green: #116530;
+  --orange: #F28C28;
+  
+  --bg: #F7F9FC;
+  --bg-alt: #FFFFFF;
+  
+  --text-main: #182B5E;
+  --text-muted: #5A6B8C;
+  
+  --border-thick: 3px solid var(--navy);
+  --border-thin: 1px solid #CBD5E1;
+  --shadow-hard: 8px 8px 0px 0px var(--navy);
+  --shadow-hard-sm: 4px 4px 0px 0px var(--navy);
+  --shadow-hard-hover: 12px 12px 0px 0px var(--navy);
+  --shadow-hard-orange: 6px 6px 0px 0px var(--orange);
+  --shadow-hard-red: 6px 6px 0px 0px var(--red);
+  --shadow-hard-green: 6px 6px 0px 0px var(--green);
+}
+
+/* =========================================================
+   RESET / BASE (SHARP BRUTALIST EDGES)
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
   margin: 0;
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #ffffff;
-  color: #182B5E;
 }
 
-* {
-  box-sizing: border-box;
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+::selection {
+  background: var(--navy);
+  color: #fff;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070B18;
+  background: #E2E8F0;
+  border-left: 2px solid var(--navy);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: var(--navy);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--red);
+}
+
+/* =========================================================
+   CONTAINER & LAYOUT
+   ========================================================= */
+.llc-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .llc-container {
+    padding-inline: 2rem;
+  }
+}
+
+/* =========================================================
+   NEO-BRUTALIST BUTTONS
+   ========================================================= */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: var(--shadow-hard);
+  transform: translate(-4px, -4px);
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: transparent;
+  color: var(--navy);
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #E2E8F0;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.btn-danger:hover:not(:disabled) {
+  box-shadow: var(--shadow-hard);
+  transform: translate(-4px, -4px);
+}
+
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.btn-success:hover:not(:disabled) {
+  box-shadow: var(--shadow-hard);
+  transform: translate(-4px, -4px);
+}
+
+.btn-warning {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: var(--orange);
+  color: var(--navy);
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.btn-warning:hover:not(:disabled) {
+  box-shadow: var(--shadow-hard);
+  transform: translate(-4px, -4px);
+}
+
+.btn-sm-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--navy);
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-sm-solid:hover:not(:disabled) {
+  background: #fff;
+  color: var(--navy);
+  box-shadow: var(--shadow-hard-sm);
+  transform: translate(-2px, -2px);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  color: var(--navy);
+  font-size: 0.875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--red);
+  background: transparent;
+}
+
+/* =========================================================
+   NEO-BRUTALIST CARDS & PANELS
+   ========================================================= */
+.brutal-card {
+  background: #fff;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-hard);
+  padding: 2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.brutal-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+.brutal-card-flat {
+  background: #fff;
+  border: var(--border-thick);
+  padding: 1.5rem;
+}
+
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+.badge-pending {
+  background: var(--orange);
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-under-review {
+  background: var(--navy-light);
+  color: #fff;
+  border: 2px solid var(--navy);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-confirmed {
+  background: var(--green);
+  color: #fff;
+  border: 2px solid var(--navy);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-rejected {
+  background: var(--red);
+  color: #fff;
+  border: 2px solid var(--navy);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-cancelled {
+  background: #CBD5E1;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-open {
+  background: #fff;
+  color: var(--green);
+  border: 2px solid var(--green);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-closed {
+  background: #fff;
+  color: var(--red);
+  border: 2px solid var(--red);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* =========================================================
+   EYEBROWS & HEADINGS
+   ========================================================= */
+.eyebrow {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--orange);
+  color: var(--navy);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  border: 2px solid var(--navy);
+}
+
+.eyebrow-red {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  border: 2px solid var(--navy);
+}
+
+.eyebrow-green {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  border: 2px solid var(--navy);
 }
