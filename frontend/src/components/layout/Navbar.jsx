@@ -66,71 +66,13 @@ export default function Navbar() {
           background: #FFFFFF !important;
           background-color: #FFFFFF !important;
           border-bottom: 3px solid var(--navy);
-          transition: all .25s ease;
+          transition: box-shadow .25s ease;
         }
         .llc-nav-inner {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          transition: height .25s ease;
-        }
-        
-        /* Standard size on Homepage (80px height) */
-        .llc-nav.nav-standard .llc-nav-inner {
           height: 80px;
-        }
-        .llc-nav.nav-standard .llc-brand-mark {
-          width: 3.5rem;
-          height: 3.5rem;
-        }
-        .llc-nav.nav-standard .llc-brand-name {
-          font-size: 1.125rem;
-        }
-        .llc-nav.nav-standard .llc-brand-sub {
-          font-size: 11px;
-        }
-        .llc-nav.nav-standard .llc-nav-links {
-          gap: 2rem;
-        }
-        .llc-nav.nav-standard .llc-nav-link {
-          font-size: .875rem;
-        }
-        .llc-nav.nav-standard .llc-nav-toggle {
-          width: 3rem;
-          height: 3rem;
-        }
-
-        /* Compact shrunk size on Inner / Subsequent Pages (60px height) */
-        .llc-nav.nav-compact .llc-nav-inner {
-          height: 60px;
-        }
-        .llc-nav.nav-compact .llc-brand-mark {
-          width: 2.35rem;
-          height: 2.35rem;
-        }
-        .llc-nav.nav-compact .llc-brand-name {
-          font-size: 0.95rem;
-        }
-        .llc-nav.nav-compact .llc-brand-sub {
-          font-size: 9.5px;
-        }
-        .llc-nav.nav-compact .llc-nav-links {
-          gap: 1.5rem;
-        }
-        .llc-nav.nav-compact .llc-nav-link {
-          font-size: .8125rem;
-        }
-        .llc-nav.nav-compact .llc-nav-toggle {
-          width: 2.25rem;
-          height: 2.25rem;
-        }
-        .llc-nav.nav-compact .btn-sm-solid {
-          padding: 0.45rem 1rem;
-          font-size: 0.75rem;
-        }
-        .llc-nav.nav-compact .btn-ghost {
-          padding: 0.45rem 0.85rem;
-          font-size: 0.75rem;
         }
 
         .llc-brand {
@@ -139,10 +81,11 @@ export default function Navbar() {
           gap: 0.75rem;
         }
         .llc-brand-mark {
+          width: 3.5rem;
+          height: 3.5rem;
           object-fit: contain;
           border: 2px solid var(--navy);
           background: #fff;
-          transition: width .25s ease, height .25s ease;
         }
         .llc-brand-text {
           display: none;
@@ -153,33 +96,34 @@ export default function Navbar() {
           .llc-brand-text { display: flex; }
         }
         .llc-brand-name {
+          font-size: 1.125rem;
           font-weight: 900;
           letter-spacing: -.03em;
           text-transform: uppercase;
           color: var(--navy);
-          transition: font-size .25s ease;
         }
         .llc-brand-sub {
+          font-size: 11px;
           font-weight: 700;
           letter-spacing: .1em;
           color: var(--red);
           text-transform: uppercase;
-          transition: font-size .25s ease;
         }
         .llc-nav-links {
           display: none;
           align-items: center;
-          transition: gap .25s ease;
+          gap: 2rem;
         }
         @media(min-width: 1024px) {
           .llc-nav-links { display: flex; }
         }
         .llc-nav-link {
+          font-size: .875rem;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: .05em;
           color: var(--navy);
-          transition: color .2s, font-size .25s ease;
+          transition: color .2s;
           position: relative;
         }
         .llc-nav-link:hover, .llc-nav-link.is-active {
@@ -205,9 +149,10 @@ export default function Navbar() {
         .llc-nav-toggle {
           display: grid;
           place-items: center;
+          width: 3rem;
+          height: 3rem;
           border: 2px solid var(--navy);
           background: transparent;
-          transition: all .25s ease;
         }
         @media(min-width: 1024px) {
           .llc-nav-toggle { display: none; }
@@ -276,7 +221,7 @@ export default function Navbar() {
         .llc-mobile-cta .solid { background: var(--navy); color: #fff; }
       `}</style>
 
-      <header className={`llc-nav no-print ${isHomePage ? 'nav-standard' : 'nav-compact'}`} ref={navRef}>
+      <header className="llc-nav no-print" ref={navRef}>
         <div className="llc-container llc-nav-inner">
           <Link to="/" className="llc-brand">
             <img
@@ -339,10 +284,10 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className={`${isHomePage ? 'text-xs' : 'text-[11px]'} font-black uppercase text-[#182B5E] max-w-[130px] truncate`}>
+                  <span className="text-xs font-black uppercase text-[#182B5E] max-w-[130px] truncate">
                     {user?.full_name || user?.email}
                   </span>
-                  <span className={`${isHomePage ? 'text-[10px]' : 'text-[9px]'} font-bold text-[#D9381E] uppercase`}>
+                  <span className="text-[10px] font-bold text-[#D9381E] uppercase">
                     {user?.role === 'admin' ? 'Administrator' : 'Student'}
                   </span>
                 </div>
