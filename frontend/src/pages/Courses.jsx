@@ -53,7 +53,7 @@ export default function Courses() {
             Academic Year 2026 Admissions
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-[#182B5E]">
-            All Campus <em>Language Programs</em>
+            All Campus <span className="text-[#D9381E]">Language Programs</span>
           </h1>
           <p className="text-base sm:text-lg text-[#5A6B8C] font-semibold">
             Choose your language discipline and pick an open batch. Seats are allocated on a first-come basis.

@@ -201,121 +201,184 @@ export default function Register() {
               Direct Student Intake · 2026
             </div>
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-[#182B5E]">
-              One Form. <em>Instant Seat</em>.
+              One Form. <span className="text-[#D9381E]">Instant Seat</span>.
             </h1>
             <p className="text-base text-[#5A6B8C] font-semibold">
               Select your course and batch. An account and your tracking number are generated in one atomic step.
             </p>
           </div>
         ) : (
-          <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
+          <div className="text-center max-w-2xl mx-auto mb-6 space-y-2 no-print">
             <div className="eyebrow-green">
               Application Confirmed · 2026
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
-              Admission <em>Receipt & Tracking</em>
+              Admission <span className="text-[#D9381E]">Receipt & Tracking</span>
             </h1>
             <p className="text-sm sm:text-base text-[#5A6B8C] font-semibold">
-              Your registration has been securely processed. Keep your tracking number safe.
+              Your registration has been securely processed. Keep this confirmation safe.
             </p>
           </div>
         )}
 
         {submitted ? (
-          /* Day 13 Confirmation Receipt */
-          <div className="max-w-2xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 sm:p-12 space-y-8">
-            <div className="text-center space-y-4">
+          /* Official 1-Page Printable Admission Receipt */
+          <div className="printable-receipt max-w-2xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-6 sm:p-8 space-y-5">
+            {/* Official Institutional Letterhead Header */}
+            <div className="flex items-center justify-between border-b-2 border-[#182B5E] pb-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src="https://llc-edu.com/wp-content/uploads/2025/06/CAMPUS-2-150x150.png"
+                  alt="LLC Logo"
+                  className="w-12 h-12 object-contain border-2 border-[#182B5E] bg-white p-0.5"
+                />
+                <div>
+                  <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-[#182B5E] leading-tight">
+                    Language Learning Campus
+                  </h3>
+                  <p className="text-[10px] font-bold text-[#D9381E] uppercase tracking-wider">
+                    Kalmunai · Official Admission Voucher
+                  </p>
+                </div>
+              </div>
+              <div className="text-right text-[11px] text-[#5A6B8C] font-semibold leading-tight">
+                <div>Academic Cycle: <strong className="text-[#182B5E]">2026</strong></div>
+                <div>Issued: <strong className="text-[#182B5E]">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</strong></div>
+              </div>
+            </div>
+
+            {/* Screen Banner Icon & Heading */}
+            <div className="text-center space-y-2">
               <div
-                className="w-16 h-16 flex items-center justify-center mx-auto"
+                className="w-12 h-12 flex items-center justify-center mx-auto"
                 style={{
                   backgroundColor: '#116530',
                   border: '3px solid #182B5E',
-                  boxShadow: '4px 4px 0px 0px #182B5E',
+                  boxShadow: '3px 3px 0px 0px #182B5E',
                   color: '#FFFFFF'
                 }}
               >
-                <CheckCircle size={36} color="#FFFFFF" strokeWidth={2.5} />
+                <CheckCircle size={28} color="#FFFFFF" strokeWidth={2.5} />
               </div>
 
               <div>
-                <span className="text-xs font-black uppercase tracking-widest text-[#116530] bg-[#DCFCE7] px-3 py-1 border border-[#116530]">
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#116530] bg-[#DCFCE7] px-3 py-0.5 border border-[#116530]">
                   Application Confirmed
                 </span>
-                <h2 className="text-3xl font-black text-[#182B5E] mt-3">
+                <h2 className="text-xl sm:text-2xl font-black text-[#182B5E] mt-1.5">
                   Registration Successfully Submitted
                 </h2>
-                <p className="text-sm font-semibold text-[#5A6B8C] mt-1">
-                  Keep your registration number safe. You will need it for admission inquiries and payments.
+                <p className="text-xs font-semibold text-[#5A6B8C]">
+                  Keep this registration voucher safe for all campus admission and bursar inquiries.
                 </p>
               </div>
             </div>
 
-            {/* Registration Number Display Box */}
-            <div className="border-[3px] border-[#182B5E] bg-[#F7F9FC] p-6 shadow-[4px_4px_0px_0px_#182B5E] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b-2 border-[#182B5E]">
+            {/* Registration Reference Box & Details Ledger */}
+            <div className="border-2 border-[#182B5E] bg-[#F7F9FC] p-4 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2 border-[#182B5E]">
                 <div>
-                  <span className="text-xs font-black uppercase tracking-wider text-[#5A6B8C]">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#5A6B8C] block">
                     Registration Reference Number
                   </span>
-                  <div className="font-mono text-3xl font-black text-[#182B5E] tracking-tight">
+                  <div className="font-mono text-2xl sm:text-3xl font-black text-[#182B5E] tracking-tight">
                     {assignedNumber}
                   </div>
                 </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleCopy}
-                  iconLeading={copied ? <Check size={16} /> : <Copy size={16} />}
-                >
-                  {copied ? 'Copied!' : 'Copy Number'}
-                </Button>
+                <div className="no-print">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleCopy}
+                    iconLeading={copied ? <Check size={16} /> : <Copy size={16} />}
+                  >
+                    {copied ? 'Copied!' : 'Copy Number'}
+                  </Button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Student Name:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Student Full Name:</span>
                   <span className="font-black text-[#182B5E] text-sm">{formData.fullName}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Registered Email:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Registered Email:</span>
                   <span className="font-black text-[#182B5E] text-sm">{formData.email}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Selected Course:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Contact Mobile:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{formData.phone}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">WhatsApp / Alt Phone:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{formData.whatsapp || 'Not Provided'}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Selected Course:</span>
                   <span className="font-black text-[#182B5E] text-sm">{selectedCourseObj?.name || 'Selected Course'}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Batch & Schedule:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Assigned Batch & Schedule:</span>
                   <span className="font-black text-[#182B5E] text-sm">{selectedBatchObj?.batch_name || 'Assigned Batch'}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Initial Status:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Town / City Address:</span>
+                  <span className="font-black text-[#182B5E] text-sm">{formData.address || 'Kalmunai, Sri Lanka'}</span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Date of Birth & Gender:</span>
+                  <span className="font-black text-[#182B5E] text-sm">
+                    {formData.dob || 'Not Provided'} ({formData.gender ? formData.gender.toUpperCase() : 'N/A'})
+                  </span>
+                </div>
+                <div>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Initial Status:</span>
                   <StatusBadge status="PENDING" size="sm" />
                 </div>
                 <div>
-                  <span className="font-bold text-[#5A6B8C] block uppercase">Intake Year:</span>
+                  <span className="font-bold text-[#5A6B8C] block uppercase text-[10px]">Intake Year:</span>
                   <span className="font-black text-[#182B5E] text-sm">2026 Academic Cycle</span>
                 </div>
               </div>
             </div>
 
             {/* Next Steps Guidance */}
-            <div className="border-l-4 border-[#182B5E] bg-[#EEF2F6] p-4 text-xs font-semibold text-[#182B5E] space-y-1">
-              <p className="font-black uppercase tracking-wider">Next Step: Verification & Portal Access</p>
-              <p className="text-[#5A6B8C]">
-                A verification link has been sent to <strong>{formData.email}</strong>. Once verified, log in to your Student Dashboard to track your admission review and download payment instructions.
+            <div className="border-l-4 border-[#182B5E] bg-[#EEF2F6] p-3 text-xs font-semibold text-[#182B5E] space-y-0.5">
+              <p className="font-black uppercase tracking-wider text-[11px]">Next Steps: Account Verification & Review</p>
+              <p className="text-[#5A6B8C] text-[11px] leading-relaxed">
+                A verification link has been sent to <strong>{formData.email}</strong>. Once verified, log in to your Student Dashboard to track admission review and download official payment vouchers.
               </p>
             </div>
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+            {/* Official Stamp & Signatures (Print-Only) */}
+            <div className="print-only hidden items-end justify-between pt-5 border-t-2 border-[#182B5E] text-xs">
+              <div className="space-y-5">
+                <div className="border-b border-[#182B5E] w-48"></div>
+                <p className="font-bold uppercase text-[9px] text-[#5A6B8C]">Student Signature & Date</p>
+              </div>
+              <div className="text-center text-[9px] text-[#5A6B8C] font-mono leading-tight">
+                <div className="font-bold text-[#182B5E]">AUTHENTICATED ADMISSION VOUCHER</div>
+                <div>REF: {assignedNumber}</div>
+                <div>LANGUAGE LEARNING CAMPUS · KALMUNAI</div>
+              </div>
+              <div className="space-y-3 text-right">
+                <div className="border border-dashed border-[#182B5E] w-32 h-12 flex items-center justify-center text-[8px] font-black text-[#5A6B8C] uppercase">
+                  Registrar's Seal
+                </div>
+                <p className="font-bold uppercase text-[9px] text-[#5A6B8C]">Authorized Officer</p>
+              </div>
+            </div>
+
+            {/* Action Buttons (Screen-Only) */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2 no-print">
               <Button
                 variant="outline"
                 size="md"
                 onClick={handlePrint}
                 iconLeading={<Printer size={16} />}
               >
-                Print Receipt
+                Print Official Receipt
               </Button>
               <Link to="/login">
                 <Button

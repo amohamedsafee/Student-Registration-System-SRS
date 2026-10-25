@@ -81,7 +81,7 @@ export default function Footer() {
         }
       `}</style>
 
-      <footer className="llc-footer">
+      <footer className="llc-footer no-print">
         <div className="llc-container">
           <div className="llc-footer-grid">
             {/* Brand column */}

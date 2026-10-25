@@ -84,7 +84,7 @@ export default function UiTestingPage() {
             UI Consistency & Quality Assurance Lab
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-[#182B5E]">
-            Design System <em>Component Testing</em> Suite
+            Design System <span className="text-[#D9381E]">Component Testing</span> Suite
           </h1>
           <p className="text-lg text-[#5A6B8C] font-semibold max-w-2xl mx-auto">
             Strictly verifying visual fidelity, neo-brutalist sharp geometry, hard drop shadows, and responsive interaction patterns from <code>sample.jsx</code>.

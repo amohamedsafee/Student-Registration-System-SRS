@@ -58,7 +58,7 @@ export default function ResetPassword() {
               Security Update
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
-              Set New <em>Password</em>
+              Set New <span className="text-[#D9381E]">Password</span>
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#5A6B8C]">
               Create a new secure password for your student portal account

@@ -54,7 +54,7 @@ export default function Login() {
               Student & Staff Portal
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
-              Account <em>Sign In</em>
+              Account <span className="text-[#D9381E]">Sign In</span>
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#5A6B8C]">
               Access your registrations and review application progress

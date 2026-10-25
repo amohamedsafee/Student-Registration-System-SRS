@@ -38,7 +38,7 @@ export default function ForgotPassword() {
               Account Recovery
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
-              Reset <em>Password</em>
+              Reset <span className="text-[#D9381E]">Password</span>
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#5A6B8C]">
               Enter your registered email address to receive reset instructions

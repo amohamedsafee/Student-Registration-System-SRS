@@ -638,7 +638,7 @@ export default function LandingPage() {
           <div className="container hero-grid">
             <div data-reveal="">
               <div className="hero-eyebrow">Admissions Open · 2026</div>
-              <h1>Your seat is <em>one form</em> away.</h1>
+              <h1>Your seat is <span style={{ color: 'var(--red)' }}>one form</span> away.</h1>
               <p className="hero-lead">
                 Browse courses, pick an open batch and register in under two minutes. Your account is created in the same step — then track your application status live.
               </p>

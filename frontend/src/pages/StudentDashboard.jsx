@@ -520,7 +520,7 @@ export default function StudentDashboard() {
                           )}
                         </div>
                         {hist.note && (
-                          <p className="text-xs font-semibold text-[#182B5E] mt-1.5 italic">
+                          <p className="text-xs font-semibold text-[#182B5E] mt-1.5">
                             "{hist.note}"
                           </p>
                         )}
@@ -531,7 +531,7 @@ export default function StudentDashboard() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-[#5A6B8C] italic">No status changes recorded yet.</p>
+                  <p className="text-xs text-[#5A6B8C]">No status changes recorded yet.</p>
                 )}
               </div>
             </div>

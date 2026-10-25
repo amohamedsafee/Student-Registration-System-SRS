@@ -207,7 +207,7 @@ export default function Navbar() {
         .llc-mobile-cta .solid { background: var(--navy); color: #fff; }
       `}</style>
 
-      <header className="llc-nav" ref={navRef}>
+      <header className="llc-nav no-print" ref={navRef}>
         <div className="llc-container llc-nav-inner">
           <Link to="/" className="llc-brand">
             <img

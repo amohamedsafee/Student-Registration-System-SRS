@@ -453,7 +453,7 @@ export default function AdminRegistrations() {
                           </span>
                         </div>
                         {hist.note && (
-                          <p className="text-xs font-semibold text-[#182B5E] mt-1 italic">
+                          <p className="text-xs font-semibold text-[#182B5E] mt-1">
                             "{hist.note}"
                           </p>
                         )}
@@ -464,7 +464,7 @@ export default function AdminRegistrations() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-[#5A6B8C] italic">No prior status transitions.</p>
+                  <p className="text-xs text-[#5A6B8C]">No prior status transitions.</p>
                 )}
               </div>
             </div>

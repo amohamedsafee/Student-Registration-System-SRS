@@ -56,6 +56,22 @@ img, svg {
   max-width: 100%;
 }
 
+/* =========================================================
+   STRICT NO-ITALIC POLICY (Upright typography throughout)
+   ========================================================= */
+*, *::before, *::after {
+  font-style: normal !important;
+}
+
+em, i, cite, dfn, var {
+  font-style: normal !important;
+}
+
+h1 em, h2 em, h3 em, h4 em, h5 em, h6 em {
+  font-style: normal !important;
+  color: var(--red);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -441,3 +457,93 @@ ul {
   margin-bottom: 1rem;
   border: 2px solid var(--navy);
 }
+
+/* =========================================================
+   OFFICIAL 1-PAGE PRINT RECEIPT STYLES
+   ========================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    background-color: #FFFFFF !important;
+    color: #182B5E !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Completely suppress all web shell elements */
+  header,
+  nav,
+  .llc-nav,
+  .llc-mobile-sheet,
+  footer,
+  .llc-footer,
+  .no-print,
+  button,
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline,
+  .btn-ghost {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Make print-only elements visible */
+  .print-only {
+    display: flex !important;
+    visibility: visible !important;
+  }
+
+  /* Ensure containers do not add overflow or multi-page margins */
+  .llc-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Single-page receipt container */
+  .printable-receipt {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 1.25rem 1.5rem !important;
+    box-shadow: none !important;
+    border: 2.5px solid #182B5E !important;
+    background: #FFFFFF !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+  }
+
+  .printable-receipt * {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+

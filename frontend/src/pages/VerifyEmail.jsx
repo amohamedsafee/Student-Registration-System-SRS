@@ -53,7 +53,7 @@ export default function VerifyEmail() {
               Official Email Verification
             </div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
-              Account <em>Verification</em>
+              Account <span className="text-[#D9381E]">Verification</span>
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#5A6B8C]">
               Validating your student portal communication address
