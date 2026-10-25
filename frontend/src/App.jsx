@@ -26,9 +26,6 @@ import AdminRegistrations from './pages/admin/AdminRegistrations';
 import AdminCourses from './pages/admin/AdminCourses';
 import AdminBatches from './pages/admin/AdminBatches';
 
-// Testing Lab
-import UiTestingPage from './pages/UiTestingPage';
-
 export default function App() {
   return (
     <AuthProvider>
@@ -71,10 +68,6 @@ export default function App() {
           <Route path="courses" element={<AdminCourses />} />
           <Route path="batches" element={<AdminBatches />} />
         </Route>
-
-        {/* UI System Testing Lab */}
-        <Route path="/test-ui" element={<UiTestingPage />} />
-        <Route path="/components-showcase" element={<UiTestingPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

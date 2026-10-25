@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../features/auth/hooks/useAuth';
-import StatusBadge from '../ui/StatusBadge';
 
 export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -10,6 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +38,19 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const handleNavAnchor = (e, hashId) => {
+    if (isHomePage) {
+      e.preventDefault();
+      const el = document.getElementById(hashId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    if (isMobileOpen) {
+      closeMobileMenu();
+    }
+  };
+
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
@@ -53,25 +66,83 @@ export default function Navbar() {
           background: #FFFFFF !important;
           background-color: #FFFFFF !important;
           border-bottom: 3px solid var(--navy);
-          transition: transform .3s ease, box-shadow .3s ease;
+          transition: all .25s ease;
         }
         .llc-nav-inner {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          transition: height .25s ease;
+        }
+        
+        /* Standard size on Homepage (80px height) */
+        .llc-nav.nav-standard .llc-nav-inner {
           height: 80px;
         }
+        .llc-nav.nav-standard .llc-brand-mark {
+          width: 3.5rem;
+          height: 3.5rem;
+        }
+        .llc-nav.nav-standard .llc-brand-name {
+          font-size: 1.125rem;
+        }
+        .llc-nav.nav-standard .llc-brand-sub {
+          font-size: 11px;
+        }
+        .llc-nav.nav-standard .llc-nav-links {
+          gap: 2rem;
+        }
+        .llc-nav.nav-standard .llc-nav-link {
+          font-size: .875rem;
+        }
+        .llc-nav.nav-standard .llc-nav-toggle {
+          width: 3rem;
+          height: 3rem;
+        }
+
+        /* Compact shrunk size on Inner / Subsequent Pages (60px height) */
+        .llc-nav.nav-compact .llc-nav-inner {
+          height: 60px;
+        }
+        .llc-nav.nav-compact .llc-brand-mark {
+          width: 2.35rem;
+          height: 2.35rem;
+        }
+        .llc-nav.nav-compact .llc-brand-name {
+          font-size: 0.95rem;
+        }
+        .llc-nav.nav-compact .llc-brand-sub {
+          font-size: 9.5px;
+        }
+        .llc-nav.nav-compact .llc-nav-links {
+          gap: 1.5rem;
+        }
+        .llc-nav.nav-compact .llc-nav-link {
+          font-size: .8125rem;
+        }
+        .llc-nav.nav-compact .llc-nav-toggle {
+          width: 2.25rem;
+          height: 2.25rem;
+        }
+        .llc-nav.nav-compact .btn-sm-solid {
+          padding: 0.45rem 1rem;
+          font-size: 0.75rem;
+        }
+        .llc-nav.nav-compact .btn-ghost {
+          padding: 0.45rem 0.85rem;
+          font-size: 0.75rem;
+        }
+
         .llc-brand {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: 0.75rem;
         }
         .llc-brand-mark {
-          width: 3.5rem;
-          height: 3.5rem;
           object-fit: contain;
           border: 2px solid var(--navy);
           background: #fff;
+          transition: width .25s ease, height .25s ease;
         }
         .llc-brand-text {
           display: none;
@@ -82,34 +153,33 @@ export default function Navbar() {
           .llc-brand-text { display: flex; }
         }
         .llc-brand-name {
-          font-size: 1.125rem;
           font-weight: 900;
           letter-spacing: -.03em;
           text-transform: uppercase;
           color: var(--navy);
+          transition: font-size .25s ease;
         }
         .llc-brand-sub {
-          font-size: 11px;
           font-weight: 700;
           letter-spacing: .1em;
           color: var(--red);
           text-transform: uppercase;
+          transition: font-size .25s ease;
         }
         .llc-nav-links {
           display: none;
           align-items: center;
-          gap: 2rem;
+          transition: gap .25s ease;
         }
         @media(min-width: 1024px) {
           .llc-nav-links { display: flex; }
         }
         .llc-nav-link {
-          font-size: .875rem;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: .05em;
           color: var(--navy);
-          transition: color .2s;
+          transition: color .2s, font-size .25s ease;
           position: relative;
         }
         .llc-nav-link:hover, .llc-nav-link.is-active {
@@ -127,7 +197,7 @@ export default function Navbar() {
         .llc-nav-actions {
           display: none;
           align-items: center;
-          gap: 1.5rem;
+          gap: 1.25rem;
         }
         @media(min-width: 640px) {
           .llc-nav-actions { display: flex; }
@@ -135,10 +205,9 @@ export default function Navbar() {
         .llc-nav-toggle {
           display: grid;
           place-items: center;
-          width: 3rem;
-          height: 3rem;
           border: 2px solid var(--navy);
           background: transparent;
+          transition: all .25s ease;
         }
         @media(min-width: 1024px) {
           .llc-nav-toggle { display: none; }
@@ -146,14 +215,14 @@ export default function Navbar() {
         .llc-burger {
           position: relative;
           display: block;
-          width: 1.5rem;
-          height: 1rem;
+          width: 1.35rem;
+          height: 0.9rem;
         }
         .llc-burger span {
           position: absolute;
           left: 0;
           width: 100%;
-          height: 3px;
+          height: 2.5px;
           background: var(--navy);
           transition: all .3s;
         }
@@ -180,11 +249,11 @@ export default function Navbar() {
         @media(min-width: 1024px) {
           .llc-mobile-sheet { display: none; }
         }
-        .llc-mobile-inner { padding: 1.5rem; }
+        .llc-mobile-inner { padding: 1.25rem 1.5rem; }
         .llc-mobile-link {
           display: block;
-          padding: 1rem 0;
-          font-size: 1.125rem;
+          padding: 0.85rem 0;
+          font-size: 1rem;
           font-weight: 800;
           text-transform: uppercase;
           border-bottom: 1px solid #E2E8F0;
@@ -193,11 +262,11 @@ export default function Navbar() {
         .llc-mobile-cta {
           display: flex;
           gap: 1rem;
-          margin-top: 1.5rem;
+          margin-top: 1.25rem;
         }
         .llc-mobile-cta a, .llc-mobile-cta button {
           flex: 1;
-          padding: 1rem;
+          padding: 0.85rem;
           text-align: center;
           font-weight: 800;
           text-transform: uppercase;
@@ -207,7 +276,7 @@ export default function Navbar() {
         .llc-mobile-cta .solid { background: var(--navy); color: #fff; }
       `}</style>
 
-      <header className="llc-nav no-print" ref={navRef}>
+      <header className={`llc-nav no-print ${isHomePage ? 'nav-standard' : 'nav-compact'}`} ref={navRef}>
         <div className="llc-container llc-nav-inner">
           <Link to="/" className="llc-brand">
             <img
@@ -228,6 +297,20 @@ export default function Navbar() {
             >
               Courses
             </Link>
+            <a
+              href={isHomePage ? '#status' : '/#status'}
+              onClick={(e) => handleNavAnchor(e, 'status')}
+              className="llc-nav-link"
+            >
+              Process
+            </a>
+            <a
+              href={isHomePage ? '#faq' : '/#faq'}
+              onClick={(e) => handleNavAnchor(e, 'faq')}
+              className="llc-nav-link"
+            >
+              FAQ
+            </a>
             <Link
               to="/register"
               className={`llc-nav-link ${isActive('/register') ? 'is-active' : ''}`}
@@ -250,22 +333,16 @@ export default function Navbar() {
                 Admin Console
               </Link>
             )}
-            <Link
-              to="/test-ui"
-              className={`llc-nav-link ${isActive('/test-ui') ? 'is-active' : ''}`}
-            >
-              UI Showcase
-            </Link>
           </nav>
 
           <div className="llc-nav-actions">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className="text-xs font-black uppercase text-[#182B5E] max-w-[130px] truncate">
+                  <span className={`${isHomePage ? 'text-xs' : 'text-[11px]'} font-black uppercase text-[#182B5E] max-w-[130px] truncate`}>
                     {user?.full_name || user?.email}
                   </span>
-                  <span className="text-[10px] font-bold text-[#D9381E] uppercase">
+                  <span className={`${isHomePage ? 'text-[10px]' : 'text-[9px]'} font-bold text-[#D9381E] uppercase`}>
                     {user?.role === 'admin' ? 'Administrator' : 'Student'}
                   </span>
                 </div>
@@ -309,12 +386,33 @@ export default function Navbar() {
               <Link to="/courses" className="llc-mobile-link" onClick={closeMobileMenu}>
                 Courses
               </Link>
+              <a
+                href={isHomePage ? '#status' : '/#status'}
+                className="llc-mobile-link"
+                onClick={(e) => handleNavAnchor(e, 'status')}
+              >
+                Process
+              </a>
+              <a
+                href={isHomePage ? '#faq' : '/#faq'}
+                className="llc-mobile-link"
+                onClick={(e) => handleNavAnchor(e, 'faq')}
+              >
+                FAQ
+              </a>
               <Link to="/register" className="llc-mobile-link" onClick={closeMobileMenu}>
                 Apply Online
               </Link>
-              <Link to="/test-ui" className="llc-mobile-link" onClick={closeMobileMenu}>
-                UI Showcase
-              </Link>
+              {isAuthenticated && !isAdmin && (
+                <Link to="/dashboard" className="llc-mobile-link" onClick={closeMobileMenu}>
+                  My Dashboard
+                </Link>
+              )}
+              {isAuthenticated && isAdmin && (
+                <Link to="/admin" className="llc-mobile-link" onClick={closeMobileMenu}>
+                  Admin Console
+                </Link>
+              )}
               <div className="llc-mobile-cta">
                 {isAuthenticated ? (
                   <button

@@ -105,7 +105,6 @@ export default function Footer() {
               <div className="llc-footer-links">
                 <Link to="/courses">Courses</Link>
                 <Link to="/register">Apply Online</Link>
-                <Link to="/test-ui">UI Testing Suite</Link>
                 <Link to="/login">Student Sign In</Link>
               </div>
             </div>
