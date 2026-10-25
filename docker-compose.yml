@@ -1,0 +1,77 @@
+# ==============================================================================
+# Production / Staging Multi-Container Orchestration for LLC Registration System
+# Independent 24/7 Hosting Stack (MySQL 8.4 + Node.js API + Nginx Frontend)
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # 1. Database Tier
+  mysql:
+    image: mysql:8.4
+    container_name: llc-srs-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-RootSecurePass2026!}
+      MYSQL_DATABASE: llc_registration
+      MYSQL_USER: ${DB_USER:-llc_app_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-AppSecurePass2026!}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/db/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - llc-network
+
+  # 2. Application API Tier
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: llc-srs-backend
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-llc_app_user}
+      DB_PASSWORD: ${DB_PASSWORD:-AppSecurePass2026!}
+      DB_NAME: llc_registration
+      JWT_SECRET: ${JWT_SECRET:-llc_prod_secret_jwt_key_2026_super_secure}
+      JWT_EXPIRES_IN: 1d
+      COOKIE_SECRET: ${COOKIE_SECRET:-llc_prod_cookie_secret_key_2026}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+    networks:
+      - llc-network
+
+  # 3. Web & Proxy Tier
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: llc-srs-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - llc-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  llc-network:
+    driver: bridge
