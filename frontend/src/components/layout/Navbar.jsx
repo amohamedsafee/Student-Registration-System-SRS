@@ -14,8 +14,8 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       if (navRef.current) {
-        if (window.scrollY > 20) {
-          navRef.current.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        if (window.scrollY > 10) {
+          navRef.current.style.boxShadow = '0 6px 0 0 rgba(24, 43, 94, 0.12)';
         } else {
           navRef.current.style.boxShadow = 'none';
         }
@@ -49,9 +49,10 @@ export default function Navbar() {
         .llc-nav {
           position: sticky;
           top: 0;
-          z-index: 50;
-          background: var(--bg-alt);
-          border-bottom: var(--border-thick);
+          z-index: 100;
+          background: #FFFFFF !important;
+          background-color: #FFFFFF !important;
+          border-bottom: 3px solid var(--navy);
           transition: transform .3s ease, box-shadow .3s ease;
         }
         .llc-nav-inner {

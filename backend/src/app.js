@@ -70,12 +70,29 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    uptime: process.uptime(),
+app.get('/api/health', async (req, res) => {
+  const db = require('./config/database');
+  let dbStatus = 'DISCONNECTED';
+  try {
+    await db.query('SELECT 1');
+    dbStatus = 'CONNECTED';
+  } catch (err) {
+    dbStatus = 'ERROR';
+  }
+
+  const memory = process.memoryUsage();
+  const isHealthy = dbStatus === 'CONNECTED';
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'OK' : 'DEGRADED',
+    database: dbStatus,
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     environment: config.env,
+    memory: {
+      rssMB: Math.round(memory.rss / (1024 * 1024)),
+      heapUsedMB: Math.round(memory.heapUsed / (1024 * 1024)),
+    },
   });
 });
 

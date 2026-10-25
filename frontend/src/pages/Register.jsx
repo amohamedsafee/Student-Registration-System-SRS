@@ -119,6 +119,14 @@ export default function Register() {
       errors.batchId = 'Please select an open batch.';
     }
 
+    if (formData.dob) {
+      const selected = new Date(formData.dob);
+      const today = new Date();
+      if (selected > today) {
+        errors.dob = 'Date of birth cannot be in the future.';
+      }
+    }
+
     setClientErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -148,11 +156,20 @@ export default function Register() {
       const response = await registrationApi.apply(payload);
       setAssignedNumber(response.registration_number);
       setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('Registration failed:', err);
-      setServerError(
-        err.message || 'Registration failed. Please check your inputs and try again.'
-      );
+      if (err.details && typeof err.details === 'object') {
+        setClientErrors(err.details);
+        const detailedList = Object.entries(err.details)
+          .map(([field, msg]) => `${field.replace(/_/g, ' ')}: ${msg}`)
+          .join('; ');
+        setServerError(err.message ? `${err.message}: ${detailedList}` : detailedList);
+      } else {
+        setServerError(
+          err.message || 'Registration failed. Please check your inputs and try again.'
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -177,25 +194,47 @@ export default function Register() {
     <div style={{ background: 'var(--bg)', color: 'var(--text-main)', minHeight: '100vh' }}>
       <Navbar />
 
-      <main className="llc-container py-12">
-        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
-          <div className="eyebrow">
-            Direct Student Intake · 2026
+      <main className="llc-container py-10 sm:py-12">
+        {!submitted ? (
+          <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
+            <div className="eyebrow">
+              Direct Student Intake · 2026
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-[#182B5E]">
+              One Form. <em>Instant Seat</em>.
+            </h1>
+            <p className="text-base text-[#5A6B8C] font-semibold">
+              Select your course and batch. An account and your tracking number are generated in one atomic step.
+            </p>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-[#182B5E]">
-            One Form. <em>Instant Seat</em>.
-          </h1>
-          <p className="text-base text-[#5A6B8C] font-semibold">
-            Select your course and batch. An account and your tracking number are generated in one atomic step.
-          </p>
-        </div>
+        ) : (
+          <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
+            <div className="eyebrow-green">
+              Application Confirmed · 2026
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-[#182B5E]">
+              Admission <em>Receipt & Tracking</em>
+            </h1>
+            <p className="text-sm sm:text-base text-[#5A6B8C] font-semibold">
+              Your registration has been securely processed. Keep your tracking number safe.
+            </p>
+          </div>
+        )}
 
         {submitted ? (
           /* Day 13 Confirmation Receipt */
           <div className="max-w-2xl mx-auto bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 sm:p-12 space-y-8">
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 border-[3px] border-[#182B5E] bg-[#116530] text-white flex items-center justify-center mx-auto shadow-[4px_4px_0px_0px_#182B5E]">
-                <CheckCircle size={36} />
+              <div
+                className="w-16 h-16 flex items-center justify-center mx-auto"
+                style={{
+                  backgroundColor: '#116530',
+                  border: '3px solid #182B5E',
+                  boxShadow: '4px 4px 0px 0px #182B5E',
+                  color: '#FFFFFF'
+                }}
+              >
+                <CheckCircle size={36} color="#FFFFFF" strokeWidth={2.5} />
               </div>
 
               <div>
@@ -406,7 +445,14 @@ export default function Register() {
                   type="date"
                   label="Date of Birth (Optional)"
                   value={formData.dob}
-                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                  max={new Date().toISOString().split('T')[0]}
+                  error={clientErrors.dob || clientErrors.date_of_birth}
+                  onChange={(e) => {
+                    setFormData({ ...formData, dob: e.target.value });
+                    if (clientErrors.dob || clientErrors.date_of_birth) {
+                      setClientErrors({ ...clientErrors, dob: null, date_of_birth: null });
+                    }
+                  }}
                   iconLeading={<Calendar size={16} />}
                 />
                 <Select

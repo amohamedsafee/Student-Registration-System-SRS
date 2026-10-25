@@ -4,7 +4,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { Button, Input } from '../components/ui';
 import useAuth from '../features/auth/hooks/useAuth';
-import { Mail, Lock, LogIn, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, AlertCircle, Shield } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,8 +16,6 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/courses';
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -26,15 +24,23 @@ export default function Login() {
     try {
       const user = await login(email, password);
       if (user.role === 'admin') {
-        navigate('/test-ui'); // or admin dashboard when ready
+        const dest = location.state?.from?.pathname || '/admin';
+        navigate(dest, { replace: true });
       } else {
-        navigate(from, { replace: true });
+        const dest = location.state?.from?.pathname || '/dashboard';
+        navigate(dest, { replace: true });
       }
     } catch (err) {
       setErrorMessage(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFillAdmin = () => {
+    setEmail('admin@llc.edu.lk');
+    setPassword('AdminPass2026!');
+    setErrorMessage(null);
   };
 
   return (
@@ -60,8 +66,11 @@ export default function Login() {
             className="bg-white border-[3px] border-[#182B5E] shadow-[8px_8px_0px_0px_#182B5E] p-8 space-y-5"
           >
             {errorMessage && (
-              <div className="p-3.5 border-2 border-[#D9381E] bg-[#FFF5F5] flex items-center gap-2 text-xs font-bold text-[#D9381E]">
-                <AlertCircle size={16} className="shrink-0" />
+              <div
+                id="login-error-banner"
+                className="p-3 border-2 border-[#D9381E] bg-[#FEE2E2] flex items-center gap-2 text-xs font-bold text-[#D9381E]"
+              >
+                <AlertCircle size={16} />
                 <span>{errorMessage}</span>
               </div>
             )}
@@ -89,7 +98,14 @@ export default function Login() {
             />
 
             <div className="flex items-center justify-between text-xs pt-1 font-bold text-[#5A6B8C]">
-              <span className="text-[11px] text-[#5A6B8C]">Admin: admin@llc.edu.lk</span>
+              <button
+                type="button"
+                onClick={handleFillAdmin}
+                className="text-xs font-black text-[#182B5E] underline flex items-center gap-1 hover:text-[#D9381E]"
+              >
+                <Shield size={13} />
+                <span>Quick-fill Admin Credentials</span>
+              </button>
               <Link to="/forgot-password" className="text-[#D9381E] hover:underline">
                 Forgot password?
               </Link>
